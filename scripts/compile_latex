@@ -1,0 +1,296 @@
+#!/bin/bash
+# Written by Adam Wilson
+# wrapper for pdflatex and asy
+chkcmd=(chktex -l "$HOME/LaTeX/scripts/.chktexrc" -q)
+texcmd=(pdflatex -shell-escape -synctex=1 -halt-on-error -interaction=nonstopmode)
+asycmd=(asy -q)
+
+# valid file types
+file_extensions=(tex)
+
+# add any additional search paths here (don't escape spaces) (keep the :: at the very end)
+export TEXINPUTS="$HOME/LaTeX/packages/::"
+
+# attempt to set banner width to the width of the (interactive) terminal
+banner_width=70
+if tput cols > /dev/null 2>&1
+then
+	banner_width="$(tput cols)"
+fi
+
+# various flags
+# 1 = true, 0=false
+do_syntax_check=1
+stop_on_warnings=1
+verbose=1
+
+
+filename=""
+name=""
+
+# usage information
+function print_help
+{
+        echo "Usage: $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") [OPTIONS] FILE"
+        echo
+        echo "Script to compile LaTeX intelligently."
+	echo "  - Will remove any auxiliary problematic files."
+	echo "  - All but the last pass is made in draft mode, so only the finished PDF is made."
+	echo "  - Will process any Asymptote files generated."
+	echo "  - Will ensure enough passes are made to correctly resolve refrences."
+        echo
+        echo "Options:"
+	echo "  -q Quiet mode."
+	if ((syntax_check))
+	then
+		echo "  -s Skip the syntax check before compiling."
+	else
+		echo "  -s Run a syntax check before compiling."
+	fi
+	if ((stop_on_warnings))
+	then
+		echo "  -w Do not stop on syntax warnings"
+	else
+		echo "  -w Stop on syntax warnings"
+	fi
+}
+
+
+# check that the file passed is of an accepted type
+# $1 = filename
+function check_file_type
+{
+	ext="${1##*.}"
+
+	for fe in "${file_extensions[@]}"
+	do
+		if [ "$ext" == "$fe" ]
+		then
+			return 0
+		fi
+	done
+
+	return 1
+}
+
+# only echo text if verbose is true
+# $1 = text to echo
+function show
+{
+	if ((verbose))
+	then
+		if [ "$1" != "" ]
+		then
+			echo $1
+		fi
+	fi
+}
+
+# draw a banner
+# $1 = length of banner
+# $2 = text to print in center of banner
+function draw_banner
+{
+	dash="-"
+
+	# if an empty string is passed, then we need all dashes
+	if [ "$2" == "" ]
+	then
+		text=""
+	else
+		text=" $2 "
+	fi
+
+	width=$(($1 + ($1 % 2)))
+
+	length="${#text}"
+
+	# build the dashes
+	dash_count=$((($width - $length - ($length % 2))/2))
+	dashes=$(printf %"$dash_count"s |tr " " "$dash")
+
+
+	# if the string has an odd length, tack on an extra dash
+	if [ "$(($length % 2))" == "0" ]
+	then
+		show "$dashes$text$dashes"
+	else
+		show "$dashes$text$dashes$dash"
+	fi
+}
+
+# run the tex program
+function run_tex
+{
+	if [ "$1" == "-draft" ]
+	then
+		draw_banner "$banner_width" "Start (Draft) LaTeX"
+	else
+		draw_banner "$banner_width" "Start LaTeX"
+	fi
+
+	if ((verbose))
+	then
+		"${texcmd[@]}" "$1" "$filename"
+	else
+		"${texcmd[@]}" "$1" "$filename" >/dev/null
+	fi
+	
+	if [ "$?" != "0" ]
+	then
+		exit $?
+	fi
+	
+	if [ "$1" == "-draft" ]
+	then
+		draw_banner "$banner_width" "End (Draft) LaTeX"
+	else
+		draw_banner "$banner_width" "End LaTeX"
+	fi
+	show " "
+}
+
+# process any asymptote files
+function run_asy
+{
+	draw_banner "$banner_width" "Start Asymptote"
+
+	count=0
+	for f in $(ls -1 "$name"-*.asy 2> /dev/null)
+	do
+		show "Processing: $f"
+		output=$("${asycmd[@]}" "$f" 2>&1 >/dev/null)
+
+		if [ "$output" != "" ]
+		then
+			echo "$output"
+			exit 1
+		fi
+		
+		count=$((count+1))
+	done
+
+	if [ "$count" == "0" ]
+	then
+		show "No Asymptote files found."
+	fi
+
+	draw_banner "$banner_width" "End Asymptote"
+	show " "
+
+	return $count
+}
+
+# removes any auxilary files from the last run
+function remove_old_files
+{
+	draw_banner "$banner_width" "Removing Files"
+	
+	for f in $(ls -1 *.nav *.out *.snm *.toc *.vrb *.pre *.pdf *.aux "$name"-* 2> /dev/null)
+	do
+		if [ -f "$f" ]
+		then
+			show "Removing $f"
+			rm "$f"
+		fi
+	done
+	
+	draw_banner "$banner_width" ""
+	show " "
+}
+
+# run a syntax check
+function syntax_check
+{
+	if ((do_syntax_check))
+	then
+		draw_banner "$banner_width" "Syntax Warnings"
+		
+		output=$("${chkcmd[@]}" "$filename" 2>/dev/null)
+		show  "$output"
+		draw_banner "$banner_width" ""
+		show " "
+
+		if [ "$output" != "" ]
+		then
+			return 1
+		fi
+
+		return 0
+	fi
+}
+
+#------------------------#
+# Script Execution Start #
+#------------------------#
+
+
+# handle any commandline options
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+while getopts "hsqw" opt; do
+	case "$opt" in
+	h)
+		print_help
+		exit
+		;;
+	s)
+		do_syntax_check=$((1-$syntax_check))
+		;;
+	w)
+		stop_on_warnings=$((1-$stop_on_warnings))
+		;;
+	q)
+		verbose=$((1-$syntax_check))
+		;;
+	*)
+		print_help
+		exit 1
+		;;
+	esac
+done
+
+shift $((OPTIND-1))
+
+[ "$1" = "--" ] && shift
+
+if [ $# -eq 0 ]
+then
+	print_help
+	exit 1
+fi
+
+# extract filename
+filename="$1"
+name="${filename%.*}"
+
+# check file type
+check_file_type "$filename"
+if [ "$?" != "0" ]
+then
+	echo "Invalid file type: $filename"
+	exit 1
+fi
+
+# start with a basic syntax check to catch obvious errors
+syntax_check
+if [ "$?" != "0" ]
+then
+	# see if we need to stop on syntax warnings
+	if ((stop_on_warnings))
+	then
+		exit 1
+	fi
+fi
+
+# clean up any old intermediate files that may cause trouble
+remove_old_files
+
+# make the first run a draft, since we will run again
+run_tex "-draft"
+
+# process any asymptote files generated, running the tex again if needed
+run_asy || run_tex "-draft"
+
+# run one last time to generate the PDF
+run_tex

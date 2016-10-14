@@ -1,0 +1,236 @@
+#!/bin/bash
+# Written by Adam Wilson
+#
+# script used to build/run presentations
+# each presentation must be in it's own directory
+# the .tex file must have the same name as the directory
+
+# program to display slides, including any options
+slideapp=(/Applications/Présentation.app/Contents/MacOS/presentation.py)
+
+# program to compile slides, including any options
+latexapp=(compile_latex -q -s)
+
+course_names=()
+course_paths=()
+course_count=0
+
+function add_course
+{
+	# check to make sure the directory is valid
+	if [ -d "$2" ]
+	then
+		# get a count of all subdirectories containing slides
+		count=0
+		while IFS= read -r -d '' n; do
+			name="${n##*/}"
+
+			if [ "$name" == "" ]
+			then
+				continue
+			fi
+
+			if [ -f "$n/$name.tex" ]
+			then
+				count=$(($count+1))
+			fi
+	        done < <(find "$2" -maxdepth 1 -type d -print0)
+
+		if [ "$count" != "0" ]
+		then
+			# add the course to the list
+			course_names+=("$1")
+			course_paths+=("$2")
+			course_count=${#course_names[@]}
+		fi
+	fi
+}
+
+# no inputs
+function pick_course
+{
+	cmd=(dialog --cancel-label "Exit" --menu "Select Course" 0 0 0)
+
+	options=()
+	
+	for i in `seq 0 $(($course_count-1))`
+	do
+		options+=($(($i+1)) "${course_names[$i]}")
+	done
+
+	options+=($(($course_count+1)) "Rebuild Slides")
+
+	#echo "${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty
+	choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
+
+	if [ "$?" != "0" ]
+	then
+		exit
+	fi
+
+	return $(($choice-1))
+}
+
+# $1 = directory contaning slide
+# $2 = name of slide (minus extension)
+function run_lecture
+{
+	tex="$1/$2.tex"
+	pdf="$1/$2.pdf"
+
+	if [ -f "$pdf" ]
+	then
+		dialog --infobox "Presenting slides" 3 21
+		"${slideapp[@]}" "$pdf"
+	else
+		dialog --infobox "Building slides" 3 20
+
+		build_slides "$1" "$2"
+
+		case $? in
+			0) run_lecture "$1" "$2" ;;
+			*) dialog --msgbox "Error compiling slides: $?" 5 30 ;;
+		esac
+	fi
+}
+
+# no inputs
+function pick_lecture
+{
+	dir="${course_paths[$1]}"
+
+	cmd=(dialog --extra-button --extra-label "Back" --cancel-label "Exit" --menu "Select Lecture" 0 0 0)
+
+	options=()
+	lecture_paths=()
+	
+	while IFS= read -r -d '' n; do
+		name="${n##*/}"
+		
+		if [ "$name" == "" ]
+		then
+			continue
+		fi
+
+		if [ -f "$n/$name.tex" ]
+		then
+			lecture_paths+=("$n")
+			options+=("${#lecture_paths[@]}" "$name")
+		fi
+	done < <(find "$dir" -maxdepth 1 -type d -print0)
+
+	#echo "${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty
+	choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
+
+	case $? in
+		0) choice=$(($choice-1))
+		   lecture="${lecture_paths[$choice]}"
+		   run_lecture "$lecture" "${lecture##*/}"
+   		   return 0;;
+		3) return 2;;
+		*) return 1;;
+	esac
+}
+
+# $1 = directory contaning slide
+# $2 = name of slide (minus extension)
+function build_slides
+{
+	# make sure the slides we are asked to build exists
+	if [ -f "$1/$2.tex" ]
+	then
+		# change into the slides directory
+		olddir=$(pwd)
+		cd "$1"
+
+		# build the slides
+		"${latexapp[@]}" "$2.tex" &> /dev/null
+		exit_status=$?
+
+		# go back to whatever directory we were originally in
+		cd "$olddir"
+
+		# return the exit status of the latex command
+		return $es
+	else
+		return 0
+	fi
+}
+
+# no inputs
+function rebuild_all_slides
+{
+	# confirm choice
+	cmd=(dialog --aspect 80 --yesno "Rebuilding slide will take a long time. Continue?" 0 0)
+
+	"${cmd[@]}"
+
+	if [ "$?" == "0" ]
+	then
+		# get a list of all slides
+		paths=()
+		names=()
+		for i in $(seq 0 $(($course_count-1)))
+		do
+			while IFS= read -r -d '' n; do
+				name="${n##*/}"
+
+				if [ "$name" == "" ]
+				then
+					continue
+				fi
+
+				if [ -f "$n/$name.tex" ]
+				then
+					paths+=("$n")
+					names+=("$name")
+				fi
+			done < <(find "${course_paths[$i]}" -maxdepth 1 -type d -print0)
+		done
+
+		# rebuild each slide
+		n=${#names[@]}
+		dialog --title "Rebuilding slides " --gauge "" 7 75 < <(
+		for i in $(seq 0 $(($n-1)))
+		do
+                        # calculate progress
+                        per=$(( 100*(i)/n ))
+
+                        # update progress bar
+cat <<EOF
+XXX
+$per
+Rebuilding ${names[$i]}
+XXX
+EOF
+			build_slides "${paths[$i]}" "${names[$i]}"
+		done
+		)
+	fi
+}
+
+# configuration
+
+add_course "MATH 1050" "/Users/weinels/Dropbox/Instructor/SLCC/Course Materials/MATH 1050/Lecture Slides/"
+add_course "MATH 2250" "/Users/weinels/Dropbox/Instructor/SLCC/Course Materials/MATH 2250/Lecture Slides/"
+
+# run the actual script
+while true
+do
+	pick_course
+
+	if [ "$?" == "$course_count" ]
+	then
+		rebuild_all_slides
+		continue
+	fi
+
+	while true
+	do
+		pick_lecture $?
+		case $? in
+			1) exit ;;
+			2) break ;;
+		esac
+	done
+done

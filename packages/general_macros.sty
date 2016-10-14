@@ -1,0 +1,87 @@
+% general macros
+% 
+% by Adam Wilson
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+% 
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{general_macros}
+  [2016/09/30 v0.1 Package to a general set of macros.]
+  
+\RequirePackage{xparse}
+\RequirePackage{amsmath}
+  
+% phantom minus sign, to help with array alignment
+\newcommand{\+}{\phantom{-}}
+
+% number system shorthand
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\V}{\mathbb{V}}
+\newcommand{\W}{\mathbb{W}}
+\newcommand{\M}{\mathbb{M}}
+\newcommand{\Poly}{\mathbb{P}}
+\newcommand{\C}{\mathbb{C}}
+
+% extends the amsmath matrix commands (for example augmented matrices)
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+% command to form a bracketed column vector
+\newif\iffirstitem
+\firstitemtrue
+
+\NewDocumentCommand\vectorlist{>{\SplitList{,}}m}
+{%
+  \firstitemtrue
+  \ProcessList{#1}{\vectoritem}%
+}
+\newcommand\vectoritem[1]{#1\\}
+\newcommand{\bvector}[1]{\begin{bmatrix}\vectorlist{#1}\end{bmatrix}}
+
+%interval notation
+\newcommand{\open}[1]{\iffirstitem \left( #1 \else #1 \right) \fi}
+\newcommand{\closed}[1]{\iffirstitem \left[ #1 \else #1 \right] \fi}
+\newcommand{\interval}[2]{\firstitemtrue #1, \firstitemfalse #2}
+
+% define symbol for matrix size symbol
+\newcommand{\by}{\times}
+
+% define handlers for matrix operations
+\newcommand{\transposeof}[1]{#1^{\raisebox{.5ex}{$\scriptscriptstyle\intercal$}}}
+\newcommand{\inverseof}[1]{#1^{\raisebox{.3ex}{$\scriptscriptstyle-\!1$}}}
+
+% bold matrix and vector with overarrow
+\newcommand{\vect}[1]{{\vec{\boldsymbol{#1}}}}
+\newcommand{\mat}[1]{\boldsymbol{#1}}
+
+% declare some new math operators
+\DeclareMathOperator{\spn}{\textbf{span}}
+\DeclareMathOperator{\rank}{\textbf{rank}}
+\DeclareMathOperator{\dimension}{\textbf{dim}}
+\renewcommand{\dim}{\dimension}
+\DeclareMathOperator{\Col}{\textbf{Col}\ }
+
+% define special matrices
+\newcommand{\identmat}[1]{\mat{I}_{#1}}
+\newcommand{\zeromat}[1]{\mat{0}_{#1}}
+
+% uniform setbuilder notation
+\newcommand{\setbuilder}[2]{\left\{#1\ \middle|\ #2\right\}}
+
+% absolute value bars
+\newcommand{\abs}[1]{{\lvert #1\rvert}}
+\newcommand{\vabs}[1]{{\lvert\lvert#1\lvert\lvert}}
+
+% bigger center dot to represent dot products
+\makeatletter
+\newcommand*\pdot{\mathpalette\pdot@{.5}}
+\newcommand*\pdot@[2]{\mathbin{\vcenter{\hbox{\scalebox{#2}{$\m@th#1\bullet$}}}}}
+\makeatother

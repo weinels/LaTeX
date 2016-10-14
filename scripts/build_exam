@@ -1,0 +1,43 @@
+#!/bin/bash
+
+filename="$1"
+ext="${filename##*.}"
+name="${filename%.*}"
+sep="_"
+
+if [ -d "exams" ]
+then
+	rm exams/*
+else
+	mkdir exams
+fi
+
+
+#echo "$filename"
+#echo "$name.$ext"
+
+for N in `seq -f "%06g" 1 $2`
+do
+	examtex="$name$sep$N$sep.tex"
+	exampdf="$name$sep$N$sep.pdf"
+	exam_rm="$name$sep$N$sep*"
+	
+	echo "$examtex"
+	echo "$exampdf"
+	echo "$name_rm"
+	
+	cp "$filename" "$examtex"
+	sed -i -e "s/!!EXAMNUMBER!!/$N/g" "$examtex"
+	compile_latex "$examtex"
+	cp "$exampdf" exams/
+	rm -f $exam_rm
+done
+
+# cleanup
+rm -f *.aux *.pre *.asy *.pdf *.out "$1-*"
+
+# build the document to print
+t="final"
+examspat="exams/$name$sep*$sep.pdf"
+examdone="$name$sep$t.pdf"
+pdfjoin --outfile $examdone $examspat

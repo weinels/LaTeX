@@ -1,0 +1,277 @@
+% Exam helper
+% 
+% by Adam Wilson
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+% 
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{exam_helper}
+  [2016/09/30 v0.1 Package to provide standardization to the formatting of exams.]
+
+\RequirePackage{general_macros}
+
+\RequirePackage{multicol}
+\RequirePackage{etoolbox}
+\RequirePackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\RequirePackage{hyperref}
+\RequirePackage{tabu}
+\RequirePackage{lastpage}
+\RequirePackage{calc}
+
+% exam info
+\newcommand{\exmName}{Exam Name}
+\newcommand{\exmDate}{Date Exam is given}
+\newcommand{\exmSemester}{Semester}
+\newcommand{\exmInstructor}{Instructor Name}
+\newcommand{\exmCourse}{MATH XXXX-X}
+\newcommand{\exmSchoolName}{School Name}
+\newcommand{\exmNum}{}
+
+% to set course info
+\newcommand{\setExamName}[1]{\renewcommand{\exmName}{#1}}
+\newcommand{\setExamDate}[1]{\renewcommand{\exmDate}{#1}}
+\newcommand{\setSemester}[1]{\renewcommand{\exmSemester}{#1}}
+\newcommand{\setInstructor}[1]{\renewcommand{\exmInstructor}{#1}}
+\newcommand{\setCourse}[1]{\renewcommand{\exmCourse}{#1}}
+\newcommand{\setSchoolName}[1]{\renewcommand{\exmSchoolName}{#1}}
+\newcommand{\setExamNumber}[1]{\renewcommand{\exmNum}{#1}}
+
+% set solution styling
+\CorrectChoiceEmphasis{\bfseries\large\color{darkgray}}
+\SolutionEmphasis{\color{darkgray}}
+
+% set header and footer
+\pagestyle{headandfoot}
+\header{\exmCourse}{\exmName}{\exmDate}
+\footer{\exmNum}{Page \thepage\ of \pageref{LastPage}}{}
+\coverheader{}{}{}
+\coverfooter{\exmNum}{}{}
+
+% spaces out problems
+\newcommand{\problemworkspace}[1]{\vspace*{\stretch{#1}}}
+
+% command check if the first argument contains text
+% arguments: < check if has text > < if empty > < if not empty>
+\newcommand{\ifnotext}[3]{%
+  \sbox0{#1}%
+  \ifdim\wd0=0pt
+    {#2}% if #1 is empty
+  \else
+    {#3}% if #1 is not empty
+  \fi
+}
+
+% set the question format
+\qformat{\textbf{Question \thequestion.}\dotfill\rule{1.5cm}{0.4pt} out of \totalpoints\ points}
+%\ifnotext{\thepoints}{}{ (\thepoints)}
+%\ifthenelse{\equal{\thepoints}{}}{}{(\thepoints)}
+
+% quick print macro to print diffrenet things if printanswers is enabled
+\newcommand{\ifprtans}[2]{%
+\ifprintanswers
+#1
+\else
+#2
+\fi}
+
+% macro to make sure spacing is left when answers aren't being printed
+\newcommand{\answerphantom}[1]{%
+\ifprintanswers
+#1
+\else
+\phantom{#1}
+\fi}
+
+% enviroment to build answer boxes
+% arguments: <table width> <num columns> <row height (nonheader)>
+\newenvironment{answerboxes}[2]{%
+\everyrow{\tabucline-}
+\begin{tabu} to #1{|*#2{X[l,m]|}@{}m{0pt}@{}}%
+}{%
+\end{tabu}%
+}
+\newcommand{\answerbox}[2]{%
+	\ifprtans{\large{\textbf{{#2}}}}%
+	         {{#1}}% 
+	&%
+}
+\newcommand{\boxheader}[1]{\textbf{#1} &}
+\newcommand{\headerline}[1]{#1 \tabularnewline}
+\newcommand{\nextline}[2]{#2 \tabularnewline[#1]}
+
+% yes/no MC problem
+\newtoggle{yesnocorrect}
+\newcommand{\answerisyes}[0]{\toggletrue{yesnocorrect}}
+\newcommand{\answerisno}[0]{\togglefalse{yesnocorrect}}
+\newcommand{\yesnochoices}[1]{#1%
+\begin{oneparcheckboxes}
+\iftoggle{yesnocorrect}
+{%
+\correctchoice Yes
+\choice No%
+}
+{%
+\choice Yes
+\correctchoice No%
+}
+\end{oneparcheckboxes}}
+
+% exam instructions
+\newcommand{\examInstructions}[0]{%
+\fbox{\fbox{\parbox{14cm}{\centering
+This exam is closed book.
+
+You may use a scientific calculator.
+
+No notes or scratch paper are allowed. 
+
+Read the instructions for every problem. 
+
+Write your solutions in the space provided. 
+
+Clearly indicate your answer to each problem.
+
+If you need extra room, you may use the back of the page.
+
+Partial credit is possible on problems worth more then one point.
+
+If you have any questions during the exam, please raise your hand.}}}}
+
+%coverpage
+\newcommand{\examCoverPages}{%
+\begin{coverpages}
+\begin{center}
+\exmSchoolName\\
+\exmCourse\\
+\exmSemester
+
+\vspace{4cm}
+{\Huge\textbf{\exmName}}
+
+% only provide student name field if solutions aren't being printed
+\ifprintanswers
+\vspace{1cm}
+{\Huge SOLUTIONS}
+\else
+\vspace{5cm}
+\makebox[14cm]{\hrulefill}
+\makebox[\textwidth]{Student Name}
+\fi
+\clearpage
+
+\cvbpword{Bonus}
+\ifprintanswers
+\vspace{1cm}
+\ifthenelse{\equal{\numbonuspoints}{0}}
+{\pointtable[v][questions]}
+{\combinedpointtable[v][questions]}
+\else
+\vspace{1cm}
+\ifthenelse{\equal{\numbonuspoints}{0}}
+{\gradetable[v][questions]}
+{\combinedgradetable[v][questions]}
+
+\vspace{0.5cm}
+\def\arraystretch{1.5}%
+\begin{tabular}{|c|c|}
+\hline
+Exam Grade&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\hline
+\end{tabular}
+\def\arraystretch{1.0}%
+\fi
+\vfill
+\examInstructions
+\end{center}
+\end{coverpages}
+\clearpage}
+
+% Reference sheet for Differential Equations and Linear Algebra
+\newcommand{\examDELARef}{%
+\begin{center}
+\section*{Table of Integrals}
+\end{center}
+\begin{multicols}{2}
+
+\begin{equation*}
+\int x^n \dx = \frac{1}{n+1}x^{n+1}, \hspace{1ex} n\neq-1
+\end{equation*}
+
+\begin{equation*}
+\int \frac{1}{x}\dx = \ln |x|
+\end{equation*}
+
+\begin{equation*}
+\int u \hspace{2pt} \dd{v} = uv - \int v du
+\end{equation*}
+
+\begin{equation*}
+\int e^x \dx = e^x 
+\end{equation*}
+
+\begin{equation*}
+\int a^x \dx = \frac{1}{\ln a} a^x
+\end{equation*}
+
+\begin{equation*}
+\int \ln x \dx = x \ln x - x
+\end{equation*}
+
+\begin{equation*}
+\int \sin x \dx = -\cos x
+\end{equation*}
+
+\begin{equation*}
+\int \cos x \dx = \sin x
+\end{equation*}
+
+\begin{equation*}
+\int \tan x \dx = \ln |\sec x| 
+\end{equation*}
+
+\begin{equation*}
+\int \sec x \dx = \ln |\sec x + \tan x|
+\end{equation*}
+
+\begin{equation*}
+\int \sec^2 x \dx = \tan x
+\end{equation*}
+
+\begin{equation*}
+\int \sec x \tan x \dx = \sec x
+\end{equation*}
+
+\begin{equation*}
+\int \frac{a}{a^2+x^2}\dx = \tan^{-1}\frac{x}{a}
+\end{equation*}
+
+\begin{equation*}
+\int \frac{a}{a^2-x^2}\dx = \frac{1}{2}\ln\left|\frac{x+a}{x-a}\right|
+\end{equation*}
+
+\begin{equation*}
+\int \frac{1}{\sqrt{a^2-x^2}} \dx = \sin^{-1} \frac{x}{a}
+\end{equation*}
+
+\begin{equation*}
+\int \frac{a}{x \sqrt{x^2-a^2}} \dx = \sec^{-1} \frac{x}{a}
+\end{equation*}
+
+\begin{align*}
+\int \frac{1}{\sqrt{x^2-a^2}} \dx &= \cosh^{-1} \frac{x}{a} \\&= \nonumber \ln (x+\sqrt{x^2-a^2})
+\end{align*}
+
+\begin{align*}
+\int \frac{1}{\sqrt{x^2+a^2}} \dx &= \sinh^{-1} \frac{x}{a} \\&=\nonumber \ln (x+\sqrt{x^2+a^2})
+\end{align*}
+
+\end{multicols}}
+
+% Reference Sheet for College Algebra
+\newcommand{\examCARef}{%
+}
+\endinput
+%%
+%% End of file
