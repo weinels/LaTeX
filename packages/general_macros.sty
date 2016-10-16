@@ -12,6 +12,8 @@
   
 \RequirePackage{xparse}
 \RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{etoolbox}
   
 % phantom minus sign, to help with array alignment
 \newcommand{\+}{\phantom{-}}
@@ -69,6 +71,14 @@
 \renewcommand{\dim}{\dimension}
 \DeclareMathOperator{\Col}{\textbf{Col}\ }
 
+% declare some macros for special functions
+\DeclareMathOperator{\cosinesym}{cos}
+\DeclareMathOperator{\sinesym}{sin}
+\DeclareMathOperator{\tangentsym}{tan}
+\newcommand{\function}[2]{\ifstrempty{#2}{#1}{#1\left( #2 \right)}}
+\renewcommand{\cos}[1][]{\function{\cosinesym}{#1}}
+\renewcommand{\sin}[1][]{\function{\sinesym}{#1}}
+\renewcommand{\tan}[1][]{\function{\tangentsym}{#1}}
 % define special matrices
 \newcommand{\identmat}[1]{\mat{I}_{#1}}
 \newcommand{\zeromat}[1]{\mat{0}_{#1}}

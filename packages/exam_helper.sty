@@ -27,7 +27,7 @@
 \newcommand{\exmInstructor}{Instructor Name}
 \newcommand{\exmCourse}{MATH XXXX-X}
 \newcommand{\exmSchoolName}{School Name}
-\newcommand{\exmNum}{}
+\newcommand{\exmNum}{\ifprtans{}{!!EXAMNUMBER!!}}
 
 % to set course info
 \newcommand{\setExamName}[1]{\renewcommand{\exmName}{#1}}
@@ -101,22 +101,29 @@
 \newcommand{\headerline}[1]{#1 \tabularnewline}
 \newcommand{\nextline}[2]{#2 \tabularnewline[#1]}
 
-% yes/no MC problem
-\newtoggle{yesnocorrect}
-\newcommand{\answerisyes}[0]{\toggletrue{yesnocorrect}}
-\newcommand{\answerisno}[0]{\togglefalse{yesnocorrect}}
-\newcommand{\yesnochoices}[1]{#1%
+% two choice MC problem
+% #1 - text of the first choice
+% #2 - text of the second choice
+\newtoggle{firstcorrect}
+\newcommand{\twochoices}[2]{%
 \begin{oneparcheckboxes}
-\iftoggle{yesnocorrect}
-{%
-\correctchoice Yes
-\choice No%
-}
-{%
-\choice Yes
-\correctchoice No%
-}
+\iftoggle{firstcorrect}{%
+\correctchoice {#1}
+\choice {#2}
+}{%
+\choice {#1}
+\correctchoice {#2}}
 \end{oneparcheckboxes}}
+
+% yes/no MC problem
+\newcommand{\answerisyes}[0]{\toggletrue{firstcorrect}}
+\newcommand{\answerisno}[0]{\togglefalse{firstcorrect}}
+\newcommand{\yesnochoices}[1]{#1\twochoices{Yes}{No}}
+
+% true/false MC problem
+\newcommand{\answeristrue}[0]{\toggletrue{firstcorrect}}
+\newcommand{\answerisfalse}[0]{\togglefalse{firstcorrect}}
+\newcommand{\truefalsechoices}[1]{#1\twochoices{True}{False}}
 
 % exam instructions
 \newcommand{\examInstructions}[0]{%
