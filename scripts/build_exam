@@ -4,40 +4,57 @@ filename="$1"
 ext="${filename##*.}"
 name="${filename%.*}"
 sep="_"
+outdir="exams"
+tag="!!EXAMNUMBER!!"
 
-if [ -d "exams" ]
+latexcmd=(compile_latex -q)
+shufflecmd=(gshuf)
+pdfjoincmd=(pdfjoin --outfile "${outdir}/${name}${sep}final.pdf")
+
+if [ -d "$outdir" ]
 then
-	rm exams/*
+	rm $outdir/* &> /dev/null
 else
 	mkdir exams
 fi
 
-
-#echo "$filename"
-#echo "$name.$ext"
-
+(
 for N in `seq -f "%06g" 1 $2`
 do
-	examtex="$name$sep$N$sep.tex"
-	exampdf="$name$sep$N$sep.pdf"
-	exam_rm="$name$sep$N$sep*"
-	
-	echo "$examtex"
-	echo "$exampdf"
-	echo "$name_rm"
-	
+	examtex="${name}${sep}$N.tex"
+	exampdf="${name}${sep}$N.pdf"
+	exam_rm="${name}${sep}$N*"
+
+	i=new=$(echo $N | sed 's/^0*//')
+	percent=$((100*($i-1)/$2))
+cat <<EOF
+XXX
+$percent
+Building $exampdf ...
+XXX
+EOF
+
 	cp "$filename" "$examtex"
-	sed -i -e "s/!!EXAMNUMBER!!/$N/g" "$examtex"
-	compile_latex "$examtex"
+	sed -i -e "s/$tag/$N/g" "$examtex"
+	"${latexcmd[@]}" "$examtex"
+	
+	if [ "$?" != "0" ]
+	then
+		break
+	fi
 	cp "$exampdf" exams/
 	rm -f $exam_rm
 done
+) | dialog --aspect 50 --title "Building Exam" --gauge "" 0 50 0
 
-# cleanup
-rm -f *.aux *.pre *.asy *.pdf *.out "$1-*"
+# make sure all exams were compiled successfully
+if [ "$(ls -1 ${outdir}/${name}${sep}*.pdf 2> /dev/null | wc -l | tr -d " ")" != "$2" ]
+then
+	dialog --aspect 50 --infobox "Latex Error" 0 0
+	exit 1
+fi
 
 # build the document to print
-t="final"
-examspat="exams/$name$sep*$sep.pdf"
-examdone="$name$sep$t.pdf"
-pdfjoin --outfile $examdone $examspat
+dialog --aspect 80 --infobox "Joining Exams" 3 0
+shuffledexams=$(ls ${outdir}/${name}${sep}*.pdf | "${shufflecmd[@]}" | tr "\n" " ")
+"${pdfjoincmd[@]}" $shuffledexams &> /dev/null
