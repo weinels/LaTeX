@@ -241,7 +241,7 @@ while getopts "hsqw" opt; do
 		stop_on_warnings=$((1-$stop_on_warnings))
 		;;
 	q)
-		verbose=$((1-$syntax_check))
+		verbose=$((1-$verbose))
 		;;
 	*)
 		print_help
