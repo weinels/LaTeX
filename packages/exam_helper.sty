@@ -195,86 +195,54 @@ Exam Grade&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
 \end{coverpages}
 \clearpage}
 
-% Reference sheet for Differential Equations and Linear Algebra
-\newcommand{\examDELARef}{%
+% Compact Table of Integrals
+\newcommand{\examIntegrals}{%
 \begin{center}
+\large
 \section*{Table of Integrals}
+
+\begin{tabular}{ll}
+$\int x^n \hspace{2pt}dx = \tfrac{1}{n+1}x^{n+1}, \hspace{1ex} n\neq-1$
+&
+$\int \frac{1}{x}\hspace{2pt}dx = \ln |x|$
+\\
+$\int u \hspace{2pt} \hspace{2pt}d{v} = uv - \int v du$
+&
+$\int e^x \hspace{2pt}dx = e^x$
+\\
+$\int a^x \hspace{2pt}dx = \tfrac{1}{\ln a} a^x$
+&
+$\int \ln x \hspace{2pt}dx = x \ln x - x$
+\\
+$\int \sin x \hspace{2pt}dx = -\cos x$
+&
+$\int \cos x \hspace{2pt}dx = \sin x$
+\\
+$\int \tan x \hspace{2pt}dx = \ln |\sec x|$
+&
+$\int \sec x \hspace{2pt}dx = \ln |\sec x + \tan x|$
+\\
+$\int \sec^2 x \hspace{2pt}dx = \tan x$
+&
+$\int \sec x \tan x \hspace{2pt}dx = \sec x$
+\\
+$\int \tfrac{a}{a^2+x^2}\hspace{2pt}dx = \tan^{-1}\tfrac{x}{a}$
+&
+$\int \tfrac{a}{a^2-x^2}\hspace{2pt}dx = \tfrac{1}{2}\ln\abs{\tfrac{x+a}{x-a}}$
+\\
+$\int \tfrac{1}{\sqrt{a^2-x^2}} \hspace{2pt}dx = \sin^{-1} \tfrac{x}{a}$
+&
+$\int \tfrac{a}{x \sqrt{x^2-a^2}} \hspace{2pt}dx = \sec^{-1} \tfrac{x}{a}$
+\\
+$\int \tfrac{1}{\sqrt{x^2-a^2}} \hspace{2pt}dx = \cosh^{-1} \tfrac{x}{a} = \nonumber \ln (x+\sqrt{x^2-a^2})$
+&
+$\int \tfrac{1}{\sqrt{x^2+a^2}} \hspace{2pt}dx = \sinh^{-1} \tfrac{x}{a} =\nonumber \ln (x+\sqrt{x^2+a^2})$
+\end{tabular}
 \end{center}
-\begin{multicols}{2}
+}
 
-\begin{equation*}
-\int x^n \dx = \frac{1}{n+1}x^{n+1}, \hspace{1ex} n\neq-1
-\end{equation*}
-
-\begin{equation*}
-\int \frac{1}{x}\dx = \ln |x|
-\end{equation*}
-
-\begin{equation*}
-\int u \hspace{2pt} \dd{v} = uv - \int v du
-\end{equation*}
-
-\begin{equation*}
-\int e^x \dx = e^x 
-\end{equation*}
-
-\begin{equation*}
-\int a^x \dx = \frac{1}{\ln a} a^x
-\end{equation*}
-
-\begin{equation*}
-\int \ln x \dx = x \ln x - x
-\end{equation*}
-
-\begin{equation*}
-\int \sin x \dx = -\cos x
-\end{equation*}
-
-\begin{equation*}
-\int \cos x \dx = \sin x
-\end{equation*}
-
-\begin{equation*}
-\int \tan x \dx = \ln |\sec x| 
-\end{equation*}
-
-\begin{equation*}
-\int \sec x \dx = \ln |\sec x + \tan x|
-\end{equation*}
-
-\begin{equation*}
-\int \sec^2 x \dx = \tan x
-\end{equation*}
-
-\begin{equation*}
-\int \sec x \tan x \dx = \sec x
-\end{equation*}
-
-\begin{equation*}
-\int \frac{a}{a^2+x^2}\dx = \tan^{-1}\frac{x}{a}
-\end{equation*}
-
-\begin{equation*}
-\int \frac{a}{a^2-x^2}\dx = \frac{1}{2}\ln\left|\frac{x+a}{x-a}\right|
-\end{equation*}
-
-\begin{equation*}
-\int \frac{1}{\sqrt{a^2-x^2}} \dx = \sin^{-1} \frac{x}{a}
-\end{equation*}
-
-\begin{equation*}
-\int \frac{a}{x \sqrt{x^2-a^2}} \dx = \sec^{-1} \frac{x}{a}
-\end{equation*}
-
-\begin{align*}
-\int \frac{1}{\sqrt{x^2-a^2}} \dx &= \cosh^{-1} \frac{x}{a} \\&= \nonumber \ln (x+\sqrt{x^2-a^2})
-\end{align*}
-
-\begin{align*}
-\int \frac{1}{\sqrt{x^2+a^2}} \dx &= \sinh^{-1} \frac{x}{a} \\&=\nonumber \ln (x+\sqrt{x^2+a^2})
-\end{align*}
-
-\end{multicols}}
+% Reference sheet for Differential Equations and Linear Algebra
+\newcommand{\examDELARef}{\examIntegrals}
 
 % Reference Sheet for College Algebra
 \newcommand{\examCARef}{%
