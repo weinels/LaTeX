@@ -18,6 +18,11 @@ then
 	banner_width="$(tput cols)"
 fi
 
+# make alternate stdout and stderr for required output
+# add "1>&3 2>&4" for commands that always display output
+exec 3>&1
+exec 4>&2
+
 # various flags
 # 1 = true, 0=false
 do_syntax_check=1
@@ -73,19 +78,6 @@ function check_file_type
 	return 1
 }
 
-# only echo text if verbose is true
-# $1 = text to echo
-function show
-{
-	if ((verbose))
-	then
-		if [ "$1" != "" ]
-		then
-			echo $1
-		fi
-	fi
-}
-
 # draw a banner
 # $1 = length of banner
 # $2 = text to print in center of banner
@@ -113,9 +105,9 @@ function draw_banner
 	# if the string has an odd length, tack on an extra dash
 	if [ "$(($length % 2))" == "0" ]
 	then
-		show "$dashes$text$dashes"
+		echo "$dashes$text$dashes"
 	else
-		show "$dashes$text$dashes$dash"
+		echo "$dashes$text$dashes$dash"
 	fi
 }
 
@@ -129,16 +121,11 @@ function run_tex
 		draw_banner "$banner_width" "Start LaTeX"
 	fi
 
-	if ((verbose))
-	then
-		"${texcmd[@]}" "$1" "$filename"
-	else
-		"${texcmd[@]}" "$1" "$filename" >/dev/null
-	fi
+	"${texcmd[@]}" "$1" "$filename"
 	
 	if [ "$?" != "0" ]
 	then
-		exit $?
+		exit 1
 	fi
 	
 	if [ "$1" == "-draft" ]
@@ -147,7 +134,7 @@ function run_tex
 	else
 		draw_banner "$banner_width" "End LaTeX"
 	fi
-	show " "
+	echo
 }
 
 # process any asymptote files
@@ -158,7 +145,7 @@ function run_asy
 	count=0
 	for f in $(ls -1 "$name"-*.asy 2> /dev/null)
 	do
-		show "Processing: $f"
+		echo "Processing: $f"
 		output=$("${asycmd[@]}" "$f" 2>&1 >/dev/null)
 
 		if [ "$output" != "" ]
@@ -172,11 +159,11 @@ function run_asy
 
 	if [ "$count" == "0" ]
 	then
-		show "No Asymptote files found."
+		echo "No Asymptote files found."
 	fi
 
 	draw_banner "$banner_width" "End Asymptote"
-	show " "
+	echo
 
 	return $count
 }
@@ -190,13 +177,13 @@ function remove_old_files
 	do
 		if [ -f "$f" ]
 		then
-			show "Removing $f"
+			echo "Removing $f"
 			rm "$f"
 		fi
 	done
 	
 	draw_banner "$banner_width" ""
-	show " "
+	echo
 }
 
 # run a syntax check
@@ -207,9 +194,9 @@ function syntax_check
 		draw_banner "$banner_width" "Syntax Warnings"
 		
 		output=$("${chkcmd[@]}" "$filename" 2>/dev/null)
-		show  "$output"
+		echo  "$output"
 		draw_banner "$banner_width" ""
-		show " "
+		echo
 
 		if [ "$output" != "" ]
 		then
@@ -260,6 +247,13 @@ then
 	exit 1
 fi
 
+# if we are not being verbose, silence stdout
+if ((1-verbose))
+then
+	exec 1>/dev/null
+	#exec 2>/dev/null
+fi
+
 # extract filename
 filename="$1"
 name="${filename%.*}"
@@ -268,7 +262,7 @@ name="${filename%.*}"
 check_file_type "$filename"
 if [ "$?" != "0" ]
 then
-	echo "Invalid file type: $filename"
+	echo "Invalid file type: $filename" 1>&3 2>&4
 	exit 1
 fi
 
