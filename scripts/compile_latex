@@ -148,6 +148,7 @@ function run_tex
 }
 
 # process any asymptote files
+# return number of files processed
 function run_asy
 {
 	draw_banner "$banner_width" "Start Asymptote"
@@ -304,7 +305,7 @@ remove_old_files
 run_tex "-draft" || exit 1
 
 # process any asymptote files generated, running the tex again if needed
-run_asy && run_tex "-draft"
+run_asy ||  run_tex "-draft" || exit 1
 
 # run one last time to generate the PDF
 run_tex || exit 1
