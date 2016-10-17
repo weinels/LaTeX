@@ -26,7 +26,8 @@ exec 4>&2
 # various flags
 # 1 = true, 0=false
 do_syntax_check=1
-stop_on_warnings=1
+pause_on_warnings=1
+halt_on_warnings=0
 verbose=1
 
 
@@ -39,12 +40,13 @@ function print_help
         echo "Usage: $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") [OPTIONS] FILE"
         echo
         echo "Script to compile LaTeX intelligently."
-	echo "  - Will remove any auxiliary problematic files."
-	echo "  - All but the last pass is made in draft mode, so only the finished PDF is made."
-	echo "  - Will process any Asymptote files generated."
-	echo "  - Will ensure enough passes are made to correctly resolve refrences."
+	echo "  * Will remove any auxiliary problematic files."
+	echo "  * All but the last pass is made in draft mode, so only the finished PDF is made."
+	echo "  * Will process any Asymptote files generated."
+	echo "  * Will ensure enough passes are made to correctly resolve refrences."
         echo
         echo "Options:"
+	echo "  -h Print this message"
 	echo "  -q Quiet mode."
 	if ((syntax_check))
 	then
@@ -52,12 +54,19 @@ function print_help
 	else
 		echo "  -s Run a syntax check before compiling."
 	fi
-	if ((stop_on_warnings))
+	if ((pause_on_warnings))
 	then
-		echo "  -w Do not stop on syntax warnings"
+		echo "  -p Do not pause on syntax warnings"
 	else
-		echo "  -w Stop on syntax warnings"
+		echo "  -p Pause on syntax warnings"
 	fi
+	if ((halt_on_warnings))
+	then
+		echo "  -H Do not halt on syntax warnings"
+	else
+		echo "  -H Halt on syntax warnings"
+	fi
+	
 }
 
 
@@ -125,7 +134,7 @@ function run_tex
 	
 	if [ "$?" != "0" ]
 	then
-		exit 1
+		return 1
 	fi
 	
 	if [ "$1" == "-draft" ]
@@ -135,6 +144,7 @@ function run_tex
 		draw_banner "$banner_width" "End LaTeX"
 	fi
 	echo
+	return 0
 }
 
 # process any asymptote files
@@ -189,22 +199,33 @@ function remove_old_files
 # run a syntax check
 function syntax_check
 {
+	retval=0
+	
 	if ((do_syntax_check))
 	then
 		draw_banner "$banner_width" "Syntax Warnings"
 		
 		output=$("${chkcmd[@]}" "$filename" 2>/dev/null)
-		echo  "$output"
+		echo $output
+
 		draw_banner "$banner_width" ""
 		echo
 
 		if [ "$output" != "" ]
 		then
-			return 1
-		fi
-
-		return 0
+			retval=1
+			
+			# see if we need to pause on syntax warnings
+			if ((pause_on_warnings * verbose * (1-halt_on_warnings)))
+			then
+				echo "Press enter to continue" 1>&3 2>&4
+				read -n1 -rs
+				echo
+			fi
+		fi	
 	fi
+	
+	return $retval
 }
 
 #------------------------#
@@ -215,7 +236,7 @@ function syntax_check
 # handle any commandline options
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
-while getopts "hsqw" opt; do
+while getopts "hsqH" opt; do
 	case "$opt" in
 	h)
 		print_help
@@ -224,8 +245,11 @@ while getopts "hsqw" opt; do
 	s)
 		do_syntax_check=$((1-$syntax_check))
 		;;
-	w)
-		stop_on_warnings=$((1-$stop_on_warnings))
+	p)
+		pause_on_warnings=$((1-$pause_on_warnings))
+		;;
+	H)
+		halt_on_warnings=$((1-$halt_on_warnings))
 		;;
 	q)
 		verbose=$((1-$verbose))
@@ -268,23 +292,19 @@ fi
 
 # start with a basic syntax check to catch obvious errors
 syntax_check
-if [ "$?" != "0" ]
+if ((halt_on_warnings * $?))
 then
-	# see if we need to stop on syntax warnings
-	if ((stop_on_warnings))
-	then
-		exit 1
-	fi
+	exit 1
 fi
 
 # clean up any old intermediate files that may cause trouble
 remove_old_files
 
 # make the first run a draft, since we will run again
-run_tex "-draft"
+run_tex "-draft" || exit 1
 
 # process any asymptote files generated, running the tex again if needed
-run_asy || run_tex "-draft"
+run_asy && run_tex "-draft"
 
 # run one last time to generate the PDF
-run_tex
+run_tex || exit 1

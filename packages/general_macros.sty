@@ -14,7 +14,11 @@
 \RequirePackage{amsmath}
 \RequirePackage{amssymb}
 \RequirePackage{etoolbox}
+\RequirePackage{mathtools}
   
+% quote text in a consistent way
+\newcommand{\quotetext}[1]{``#1''}
+
 % phantom minus sign, to help with array alignment
 \newcommand{\+}{\phantom{-}}
 
@@ -95,3 +99,31 @@
 \newcommand*\pdot{\mathpalette\pdot@{.5}}
 \newcommand*\pdot@[2]{\mathbin{\vcenter{\hbox{\scalebox{#2}{$\m@th#1\bullet$}}}}}
 \makeatother
+
+% command to place arrays of symbols above a letter
+\makeatletter
+\def\gsh#1{%
+  \vbox{\hbox{%
+    \let\\\cr
+    \offinterlineskip%
+    \valign{&\hb@xt@2\p@{\hss$##$\hss}\vskip.2ex\cr#1\crcr}%
+  }\vskip-.36ex}%
+}
+\def\gshsym{\@ifstar\gsh@ssym\gsh@sym}
+\def\gsh@sym#1#2{\mathrlap{\overset{#1}{\phantom{#2}}}#2}
+\def\gsh@ssym#1#2{\overset{#1}{#2}{\vphantom{#2}}}
+\makeatother
+
+\newcommand\gshone{\gsh{.}}
+\newcommand\gshtwo{\gsh{.&.}}
+\newcommand\gshthree{\gsh{.&.&.}}
+
+% command for newton's dot notation
+% #1 = letter to place dots above
+% #2 = number of dots (if #2 is too large, no dots are placed)
+\newcommand{\ndot}[2]{%
+\ifthenelse{\equal{#2}{1}}{\gshsym{\gshone}{#1}}
+	{\ifthenelse{\equal{#2}{2}}{\gshsym{\gshone\gshone}{#1}}
+		{\ifthenelse{\equal{#2}{3}}{\gshsym{\gshtwo\gshone}{#1}}
+			{\ifthenelse{\equal{#2}{4}}{\gshsym{\gshtwo\gshtwo}{#1}}
+				{#1}}}}}
