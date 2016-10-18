@@ -7,7 +7,7 @@ sep="_"
 outdir="exams"
 tag="!!EXAMNUMBER!!"
 
-latexcmd=(compile_latex -q)
+latexcmd=(compile_latex -q -s)
 shufflecmd=(gshuf)
 pdfjoincmd=(pdfjoin --outfile "${outdir}/${name}${sep}final.pdf")
 
