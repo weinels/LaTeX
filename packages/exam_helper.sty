@@ -44,7 +44,7 @@
 
 % set header and footer
 \pagestyle{headandfoot}
-\header{\exmCourse}{\exmName}{\exmDate}
+\header{\exmCourse}{\ifprtans{\exmName\ Solutions}{\exmName}}{\exmDate}
 \footer{\exmNum}{Page \thepage\ of \pageref{LastPage}}{}
 \coverheader{}{}{}
 \coverfooter{\exmNum}{}{}
