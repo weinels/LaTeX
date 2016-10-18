@@ -184,7 +184,7 @@ function remove_old_files
 {
 	draw_banner "$banner_width" "Removing Files"
 	
-	for f in $(ls -1 *.nav *.out *.snm *.toc *.vrb *.pre *.pdf *.aux "$name"-* 2> /dev/null)
+	for f in $(ls -1 *.nav *.out *.snm *.toc *.vrb *.pre "$name".pdf *.aux "$name"-* 2> /dev/null)
 	do
 		if [ -f "$f" ]
 		then
