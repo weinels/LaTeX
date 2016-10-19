@@ -207,7 +207,7 @@ function syntax_check
 		draw_banner "$banner_width" "Syntax Warnings"
 		
 		output=$("${chkcmd[@]}" "$filename" 2>/dev/null)
-		echo $output
+		echo "$output"
 
 		draw_banner "$banner_width" ""
 		echo
@@ -227,6 +227,20 @@ function syntax_check
 	fi
 	
 	return $retval
+}
+
+function show_time ()
+{
+	local T=$1
+	local D=$((T/60/60/24))
+	local H=$((T/60/60%24))
+	local M=$((T/60%60))
+	local S=$((T%60))
+	[[ $D > 0 ]] && printf '%d days ' $D
+	[[ $H > 0 ]] && printf '%d hours ' $H
+	[[ $M > 0 ]] && printf '%d minutes ' $M
+	[[ $D > 0 || $H > 0 || $M > 0 ]] && printf 'and '
+	printf '%d seconds\n' $S
 }
 
 #------------------------#
@@ -298,6 +312,9 @@ then
 	exit 1
 fi
 
+# get start time
+start=$(date +%s)
+
 # clean up any old intermediate files that may cause trouble
 remove_old_files
 
@@ -309,3 +326,11 @@ run_asy ||  run_tex "-draft" || exit 1
 
 # run one last time to generate the PDF
 run_tex || exit 1
+
+#get end time
+end=$(date +%s)
+
+# print compile time
+diff=$(echo "$end - $start" | bc)
+printf "Duration: "
+show_time "$diff"
