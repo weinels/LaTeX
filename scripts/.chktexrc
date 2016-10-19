@@ -333,7 +333,7 @@ Silent
     \printanswers \examCoverPages \question \part \ifprintanswers
     \headerline \examCARef \examDELARef
 
-    \hideasymptote
+    \hideasymptote \draw
 }
 
 #####################################################################
@@ -428,7 +428,7 @@ MathEnvir
 
 VerbEnvir
 {
-    verbatim comment listing verbatimtab rawhtml errexam picture texdraw asy tabular tabu
+    verbatim comment listing verbatimtab rawhtml errexam picture texdraw asymptote asy tabular tabu
 }
 
 #####################################################################
