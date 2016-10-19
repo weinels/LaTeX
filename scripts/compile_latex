@@ -332,5 +332,8 @@ end=$(date +%s)
 
 # print compile time
 diff=$(echo "$end - $start" | bc)
-printf "Duration: "
+
+# display the time
+draw_banner "$banner_width" "Duration"
 show_time "$diff"
+draw_banner "$banner_width" ""
