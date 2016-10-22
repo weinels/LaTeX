@@ -6,6 +6,7 @@ name="${filename%.*}"
 sep="_"
 outdir="exams"
 tag="!!EXAMNUMBER!!"
+printanscmd="printanswers"
 
 latexcmd=(compile_latex -q -s)
 shufflecmd=(gshuf)
@@ -18,6 +19,7 @@ else
 	mkdir exams
 fi
 
+# build the numbered exams
 (
 for N in `seq -f "%06g" 1 $2`
 do
@@ -35,6 +37,7 @@ XXX
 EOF
 
 	cp "$filename" "$examtex"
+	sed -i -e "s/^.*$printanscmd.*\$//g" "$examtex"
 	sed -i -e "s/$tag/$N/g" "$examtex"
 	"${latexcmd[@]}" "$examtex"
 	
@@ -45,7 +48,7 @@ EOF
 	cp "$exampdf" exams/
 	rm -f $exam_rm
 done
-) | dialog --aspect 50 --title "Building Exam" --gauge "" 0 50 0
+) | dialog --aspect 50 --title "Building Numbered Exams" --gauge "" 0 50 0
 
 # make sure all exams were compiled successfully
 if [ "$(ls -1 ${outdir}/${name}${sep}*.pdf 2> /dev/null | wc -l | tr -d " ")" != "$2" ]
@@ -55,6 +58,49 @@ then
 fi
 
 # build the document to print
-dialog --aspect 80 --infobox "Joining Exams" 3 0
+dialog --aspect 80 --infobox "Joining Numbered Exams" 3 0
 shuffledexams=$(ls ${outdir}/${name}${sep}*.pdf | "${shufflecmd[@]}" | tr "\n" " ")
 "${pdfjoincmd[@]}" $shuffledexams &> /dev/null
+
+# build a unnumbered makeup exam
+dialog --aspect 80 --infobox "Building Makeup Exam" 3 0
+
+N="makeup"
+examtex="${name}${sep}$N.tex"
+exampdf="${name}${sep}$N.pdf"
+exam_rm="${name}${sep}$N*"
+
+cp "$filename" "$examtex"
+sed -i -e "s/^.*$printanscmd.*\$//g" "$examtex"
+sed -i -e "s/$tag/$N/g" "$examtex"
+"${latexcmd[@]}" "$examtex"
+
+if [ "$?" != "0" ]
+then
+	dialog --aspect 50 --infobox "Latex Error" 0 0
+	exit 1
+fi
+cp "$exampdf" exams/
+rm -f $exam_rm
+
+# build a unnumbered answer key
+dialog --aspect 80 --infobox "Building Solutions" 3 0
+
+N="solutions"
+examtex="${name}${sep}$N.tex"
+exampdf="${name}${sep}$N.pdf"
+exam_rm="${name}${sep}$N*"
+
+cp "$filename" "$examtex"
+sed -i -e "s/^.*$printanscmd.*\$//g" "$examtex"
+sed -i -e "s/$tag/$N/g" "$examtex"
+sed -i -e '2s/^/\\printanswers /' "$examtex"
+"${latexcmd[@]}" "$examtex"
+
+if [ "$?" != "0" ]
+then
+	dialog --aspect 50 --infobox "Latex Error" 0 0
+	exit 1
+fi
+cp "$exampdf" exams/
+#rm -f $exam_rm
