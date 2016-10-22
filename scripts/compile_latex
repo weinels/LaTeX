@@ -25,6 +25,7 @@ exec 4>&2
 
 # various flags
 # 1 = true, 0=false
+rebuild_from_scratch=0
 do_syntax_check=1
 pause_on_warnings=1
 halt_on_warnings=0
@@ -65,6 +66,12 @@ function print_help
 		echo "  -H Do not halt on syntax warnings"
 	else
 		echo "  -H Halt on syntax warnings"
+	fi
+	if ((rebuild_from_scratch))
+	then
+		echo "  -R Do not delete any old auxiliary files."
+	else
+		echo "  -R Rebuild from scratch. Delete all old auxiliary files."
 	fi
 	
 }
@@ -161,7 +168,7 @@ function run_asy
 			diff "$f" "$f.old" 2>&1 >/dev/null
 			if [ "$?" = "0" ]
 			then
-				echo "Unaffected:  $f"
+				echo "Unaffected: $f"
 				continue
 			fi
 		fi
@@ -189,10 +196,9 @@ function run_asy
 # removes any auxilary files from the last run
 function remove_old_files
 {
-	return
 	draw_banner "$banner_width" "Removing Files"
-	
-	for f in $(ls -1 *.nav *.out *.snm *.toc *.vrb *.pre "$name".pdf *.aux "$name"-* 2> /dev/null)
+
+	for f in $(ls -1 "$name".nav "$name".out "$name".snm "$name".toc "$name".vrb "$name".pre "$name".pdf "$name".aux "$name".log "$name".dvi "$name".fls "$name".synctex.gz "$name"-* 2> /dev/null)
 	do
 		if [ -f "$f" ]
 		then
@@ -200,7 +206,7 @@ function remove_old_files
 			rm "$f"
 		fi
 	done
-	
+
 	draw_banner "$banner_width" ""
 	echo
 }
@@ -259,7 +265,7 @@ function show_time ()
 # handle any commandline options
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
-while getopts "hsqH" opt; do
+while getopts "hsqHR" opt; do
 	case "$opt" in
 	h)
 		print_help
@@ -276,6 +282,8 @@ while getopts "hsqH" opt; do
 		;;
 	q)
 		verbose=$((1-$verbose))
+		;;
+	R)	rebuild_from_scratch=$((1-$rebuild_from_scratch))
 		;;
 	*)
 		print_help
@@ -324,7 +332,10 @@ fi
 start=$(date +%s)
 
 # clean up any old intermediate files that may cause trouble
-remove_old_files
+if ((rebuild_from_scratch))
+then
+	remove_old_files
+fi
 
 # make the first run a draft, since we will run again
 run_tex "-draft" || exit 1
