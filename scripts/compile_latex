@@ -156,6 +156,16 @@ function run_asy
 	count=0
 	for f in $(ls -1 "$name"-*.asy 2> /dev/null)
 	do
+		if [ -e "$f.old" ]
+		then
+			diff "$f" "$f.old" 2>&1 >/dev/null
+			if [ "$?" = "0" ]
+			then
+				echo "Unaffected:  $f"
+				continue
+			fi
+		fi
+
 		echo "Processing: $f"
 		output=$("${asycmd[@]}" "$f" 2>&1 >/dev/null)
 
@@ -164,14 +174,11 @@ function run_asy
 			echo "$output"
 			exit 1
 		fi
+
+		cp "$f" "$f.old"
 		
 		count=$((count+1))
 	done
-
-	if [ "$count" == "0" ]
-	then
-		echo "No Asymptote files found."
-	fi
 
 	draw_banner "$banner_width" "End Asymptote"
 	echo
@@ -182,6 +189,7 @@ function run_asy
 # removes any auxilary files from the last run
 function remove_old_files
 {
+	return
 	draw_banner "$banner_width" "Removing Files"
 	
 	for f in $(ls -1 *.nav *.out *.snm *.toc *.vrb *.pre "$name".pdf *.aux "$name"-* 2> /dev/null)
