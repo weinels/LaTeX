@@ -258,7 +258,7 @@ while getopts "hsqH" opt; do
 		exit
 		;;
 	s)
-		do_syntax_check=$((1-$syntax_check))
+		do_syntax_check=$((1-$do_syntax_check))
 		;;
 	p)
 		pause_on_warnings=$((1-$pause_on_warnings))
