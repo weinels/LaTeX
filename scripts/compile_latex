@@ -4,6 +4,7 @@
 chkcmd=(chktex -l "$HOME/LaTeX/scripts/.chktexrc" -q)
 texcmd=(pdflatex -shell-escape -synctex=1 -halt-on-error -interaction=nonstopmode)
 asycmd=(asy -q)
+gnuls=(gls)
 
 # valid file types
 file_extensions=(tex)
@@ -161,7 +162,7 @@ function run_asy
 	draw_banner "$banner_width" "Start Asymptote"
 
 	count=0
-	for f in $(ls -1 "$name"-*.asy 2> /dev/null)
+	for f in $("${gnuls[@]}" "-1v" "$name"-*.asy 2> /dev/null)
 	do
 		if [ -e "$f.old" ]
 		then
@@ -198,7 +199,7 @@ function remove_old_files
 {
 	draw_banner "$banner_width" "Removing Files"
 
-	for f in $(ls -1 "$name".nav "$name".out "$name".snm "$name".toc "$name".vrb "$name".pre "$name".pdf "$name".aux "$name".log "$name".dvi "$name".fls "$name".synctex.gz "$name"-* 2> /dev/null)
+	for f in $("${gnuls[@]}" "-1v" "$name".nav "$name".out "$name".snm "$name".toc "$name".vrb "$name".pre "$name".pdf "$name".aux "$name".log "$name".dvi "$name".fls "$name".synctex.gz "$name"-* 2> /dev/null)
 	do
 		if [ -f "$f" ]
 		then
