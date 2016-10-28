@@ -9,7 +9,7 @@
 slideapp=(/Applications/Présentation.app/Contents/MacOS/presentation.py)
 
 # program to compile slides, including any options
-latexapp=(compile_latex -q -s)
+latexapp=(compile_latex -R -q -s)
 
 course_names=()
 course_paths=()
