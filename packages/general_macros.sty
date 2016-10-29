@@ -14,8 +14,8 @@
 \RequirePackage{amsmath}
 \RequirePackage{amssymb}
 \RequirePackage{etoolbox}
-\RequirePackage{mathtools}
-  
+\RequirePackage{mathtools}  
+
 % quote text in a consistent way
 \newcommand{\quotetext}[1]{``#1''}
 
@@ -80,10 +80,32 @@
 \DeclareMathOperator{\cosinesym}{cos}
 \DeclareMathOperator{\sinesym}{sin}
 \DeclareMathOperator{\tangentsym}{tan}
-\newcommand{\function}[2]{\ifstrempty{#2}{#1}{#1\left( #2 \right)}}
-\renewcommand{\cos}[1][]{\function{\cosinesym}{#1}}
-\renewcommand{\sin}[1][]{\function{\sinesym}{#1}}
-\renewcommand{\tan}[1][]{\function{\tangentsym}{#1}}
+\DeclareMathOperator{\secantsym}{sec}
+\DeclareMathOperator{\cosecantsym}{csc}
+\DeclareMathOperator{\cotangentsym}{cot}
+\DeclareMathOperator{\naturallogsym}{ln}
+\DeclareMathOperator{\logarithmsym}{log}
+\newcommand{\supfunction}[3]{%
+\ifstrempty{#3}{#1}{#1^{#3}}
+\ifstrempty{#2}{}{\left(#2\right)}}
+\newcommand{\subfunction}[3]{%
+\ifstrempty{#3}{#1}{#1_{#3}}
+\ifstrempty{#2}{}{\left(#2\right)}}
+\DeclareDocumentCommand{\cos}{ O{} O{} }{\supfunction{\cosinesym}{#1}{#2}}
+\DeclareDocumentCommand{\sec}{ O{} O{} }{\supfunction{\secantsym}{#1}{#2}}
+\DeclareDocumentCommand{\sin}{ O{} O{} }{\supfunction{\sinesym}{#1}{#2}}
+\DeclareDocumentCommand{\csc}{ O{} O{} }{\supfunction{\cosecantsym}{#1}{#2}}
+\DeclareDocumentCommand{\tan}{ O{} O{} }{\supfunction{\tangentsym}{#1}{#2}}
+\DeclareDocumentCommand{\cot}{ O{} O{} }{\supfunction{\cotangentsym}{#1}{#2}}
+\DeclareDocumentCommand{\ln}{ O{} O{} }{\supfunction{\naturallogsym}{#1}{#2}}
+\DeclareDocumentCommand{\log}{ O{} O{} }{\subfunction{\logarithmsym}{#1}{#2}}
+%\newcommand{\function}[2]{\ifstrempty{#2}{#1}{#1\left( #2 \right)}}
+%\renewcommand{\cos}[1][]{\function{\cosinesym}{#1}}
+%\renewcommand{\sin}[1][]{\function{\sinesym}{#1}}
+%\renewcommand{\tan}[1][]{\function{\tangentsym}{#1}}
+%\renewcommand{\sec}[1][]{\function{\secantsym}{#1}}
+%\renewcommand{\csc}[1][]{\function{\cosecantsym}{#1}}
+%\renewcommand{\cot}[1][]{\function{\cotangentsym}{#1}}
 
 % define special matrices
 \newcommand{\identmat}[1]{\mat{I}_{#1}}
