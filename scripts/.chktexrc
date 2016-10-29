@@ -322,13 +322,13 @@ Silent
 -    \appendix \listfiles \and \quad
     \vfill \vfil \hfill \hfil \topmargin \oddsidemargin
     \frenchspacing \nonfrenchspacing
-    \begingroup \endgroup \par
+    \begingroup \endgroup \par \prime
 
     \vrefwarning \upshape \headheight \headsep \hoffset \voffset
     \cdot \qquad
     \left \right
 
-    \pause \onslide \visible \titlepage
+    \pause \onslide \visible \titlepage \nextstep \intercal
 
     \printanswers \examCoverPages \question \part \ifprintanswers
     \headerline \examCARef \examDELARef
