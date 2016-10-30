@@ -141,7 +141,7 @@ function run_tex
 	# workaround for asymptote not working with pdflatex's -output-directory command
 	cp "$working_dir"/"$name"-* ./ 2>/dev/null
 	
-	if [ "$1" == "-draft" ]
+	if [ "$1" == "draft" ]
 	then
 		draw_banner "$banner_width" "Start (Draft) LaTeX"
 
