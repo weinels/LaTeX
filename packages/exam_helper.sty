@@ -86,7 +86,7 @@
 \bonusqformat{\textbf{Question \thequestion. (Bonus)}\dotfill\rule{1.5cm}{0.4pt} out of \totalpoints\ points}
 \fi
 
-% quick print macro to print diffrenet things if printanswers is enabled
+% quick print macro to print different things if printanswers is enabled
 \newcommand{\ifprtans}[2]{%
 \ifprintanswers
 #1
@@ -102,7 +102,7 @@
 \phantom{#1}
 \fi}
 
-% enviroment to build answer boxes
+% environment to build answer boxes
 % arguments: <table width> <num columns> <row height (nonheader)>
 \newenvironment{answerboxes}[2]{%
 \everyrow{\tabucline-}
@@ -111,7 +111,7 @@
 \end{tabu}%
 }
 \newcommand{\answerbox}[2]{%
-	\ifprtans{\large{\textbf{{#2}}}}%
+	\ifprtans{{#2}}%
 	         {{#1}}% 
 	&%
 }
@@ -167,9 +167,10 @@ If you have any questions during the exam, please raise your hand.}}}}
 % extra instructions for mock exams
 \newcommand{\examMockInstructions}[0]{%
 \fbox{\fbox{\parbox{14cm}{\centering
-This is a \textbf{Practice Exam}. 
+{\LARGE This is a \textbf{Practice Exam}.}
 
-These problems will be similar, \textbf{but different}, from the problems on the real exam.}}}}
+\vspace{0.5cm}
+These problems will be similar, but \underline{\textbf{different}}, from the problems on the real exam.}}}}
 %coverpage
 \newcommand{\examCoverPages}{%
 \begin{coverpages}
@@ -196,6 +197,9 @@ These problems will be similar, \textbf{but different}, from the problems on the
 \fi
 \clearpage
 
+\ifmockexam
+\examMockInstructions
+\else
 \cvbpword{Bonus}
 \ifprintanswers
 \vspace{1cm}
@@ -217,11 +221,8 @@ Exam Grade&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
 \end{tabular}
 \def\arraystretch{1.0}%
 \fi
-\vfill
-\ifmockexam
-\examMockInstructions
-\vspace{1cm}
 \fi
+\vfill
 
 \examInstructions
 \end{center}
