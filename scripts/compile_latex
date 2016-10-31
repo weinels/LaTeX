@@ -150,6 +150,7 @@ function run_tex
 		return_code=$?
 
 		draw_banner "$banner_width" "End (Draft) LaTeX"
+		echo
 	else
 		draw_banner "$banner_width" "Start LaTeX"
 
@@ -160,6 +161,7 @@ function run_tex
 		cp "$working_dir"/"$name".pdf ./
 
 		draw_banner "$banner_width" "End LaTeX"
+		echo
 	fi
 
 	# workaround for asymptote not working with pdflatex's -output-directory command
