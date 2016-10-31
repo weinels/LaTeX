@@ -146,8 +146,9 @@
 % #1 = letter to place dots above
 % #2 = number of dots (if #2 is too large, no dots are placed)
 \newcommand{\ndot}[2]{%
-\ifthenelse{\equal{#2}{1}}{\gshsym{\gshone}{#1}}
-	{\ifthenelse{\equal{#2}{2}}{\gshsym{\gshone\gshone}{#1}}
-		{\ifthenelse{\equal{#2}{3}}{\gshsym{\gshtwo\gshone}{#1}}
-			{\ifthenelse{\equal{#2}{4}}{\gshsym{\gshtwo\gshtwo}{#1}}
-				{#1}}}}}
+\ifthenelse{\equal{#2}{0}}{#1}
+	{\ifthenelse{\equal{#2}{1}}{\dot{#1}}
+		{\ifthenelse{\equal{#2}{2}}{\ddot{#1}}
+			{\ifthenelse{\equal{#2}{3}}{\gshsym{\gshtwo\gshone}{#1}}
+				{\ifthenelse{\equal{#2}{4}}{\gshsym{\gshtwo\gshtwo}{#1}}
+					{#1}}}}}}

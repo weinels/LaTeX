@@ -9,7 +9,7 @@
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{exam_helper}
   [2016/09/30 v0.1 Package to provide standardization to the formatting of exams.]
-
+  
 \RequirePackage{general_macros}
 
 \RequirePackage{multicol}
@@ -20,6 +20,13 @@
 \RequirePackage{lastpage}
 \RequirePackage{calc}
 
+% mock exam option
+\newif\ifmockexam
+\mockexamfalse
+\DeclareOption{mock}{
+  \mockexamtrue
+}
+\ProcessOptions\relax
 % exam info
 \newcommand{\exmName}{Exam Name}
 \newcommand{\exmDate}{Date Exam is given}
@@ -44,10 +51,17 @@
 
 % set header and footer
 \pagestyle{headandfoot}
+\ifmockexam
+\header{\exmCourse}{\ifprtans{\exmName \ \textbf{(Practice Exam)} Solutions}{\exmName\ \textbf{(Practice Exam)}}}{\exmDate}
+\footer{\exmNum}{Page \thepage\ of \pageref{LastPage}}{}
+\coverheader{}{}{}
+\coverfooter{\exmNum}{}{}
+\else
 \header{\exmCourse}{\ifprtans{\exmName\ Solutions}{\exmName}}{\exmDate}
 \footer{\exmNum}{Page \thepage\ of \pageref{LastPage}}{}
 \coverheader{}{}{}
 \coverfooter{\exmNum}{}{}
+\fi
 
 % spaces out problems
 \newcommand{\problemworkspace}[1]{\vspace*{\stretch{#1}}}
@@ -64,10 +78,13 @@
 }
 
 % set the question format
+\ifmockexam
+\qformat{\textbf{Question \thequestion.}\dotfill}
+\bonusqformat{\textbf{Question \thequestion. (Bonus)}\dotfill}
+\else
 \qformat{\textbf{Question \thequestion.}\dotfill\rule{1.5cm}{0.4pt} out of \totalpoints\ points}
 \bonusqformat{\textbf{Question \thequestion. (Bonus)}\dotfill\rule{1.5cm}{0.4pt} out of \totalpoints\ points}
-%\ifnotext{\thepoints}{}{ (\thepoints)}
-%\ifthenelse{\equal{\thepoints}{}}{}{(\thepoints)}
+\fi
 
 % quick print macro to print diffrenet things if printanswers is enabled
 \newcommand{\ifprtans}[2]{%
@@ -147,6 +164,12 @@ Partial credit is possible on problems worth more then one point.
 
 If you have any questions during the exam, please raise your hand.}}}}
 
+% extra instructions for mock exams
+\newcommand{\examMockInstructions}[0]{%
+\fbox{\fbox{\parbox{14cm}{\centering
+This is a \textbf{Practice Exam}. 
+
+These problems will be similar, \textbf{but different}, from the problems on the real exam.}}}}
 %coverpage
 \newcommand{\examCoverPages}{%
 \begin{coverpages}
@@ -157,6 +180,10 @@ If you have any questions during the exam, please raise your hand.}}}}
 
 \vspace{4cm}
 {\Huge\textbf{\exmName}}
+
+\ifmockexam
+{\LARGE \vspace{1cm} Practice Exam}
+\fi 
 
 % only provide student name field if solutions aren't being printed
 \ifprintanswers
@@ -191,6 +218,11 @@ Exam Grade&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
 \def\arraystretch{1.0}%
 \fi
 \vfill
+\ifmockexam
+\examMockInstructions
+\vspace{1cm}
+\fi
+
 \examInstructions
 \end{center}
 \end{coverpages}
