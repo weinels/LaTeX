@@ -331,7 +331,7 @@ Silent
     \pause \onslide \visible \titlepage \nextstep \intercal
 
     \printanswers \examCoverPages \question \part \ifprintanswers
-    \headerline \examCARef \examDELARef
+    \headerline \examCARef \examDELARef \mockexam
 
     \hideasymptote \draw \in
 }
