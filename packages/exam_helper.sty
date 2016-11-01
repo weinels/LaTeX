@@ -19,6 +19,7 @@
 \RequirePackage{tabu}
 \RequirePackage{lastpage}
 \RequirePackage{calc}
+\RequirePackage{xstring}
 
 % mock exam option
 \newif\ifmockexam
@@ -52,13 +53,13 @@
 % set header and footer
 \pagestyle{headandfoot}
 \ifmockexam
-\header{\exmCourse}{\ifprtans{\exmName \ \textbf{(Practice Exam)} Solutions}{\exmName\ \textbf{(Practice Exam)}}}{\exmDate}
-\footer{\exmNum}{Page \thepage\ of \pageref{LastPage}}{}
+\header{\exmCourse}{\ifprtans{\exmName Solutions}{\exmName}}{\textbf{Practice Exam}}
+\footer{\exmNum}{Page \thepage\ of \pageref{LastPage}}{\exmDate}
 \coverheader{}{}{}
 \coverfooter{\exmNum}{}{}
 \else
-\header{\exmCourse}{\ifprtans{\exmName\ Solutions}{\exmName}}{\exmDate}
-\footer{\exmNum}{Page \thepage\ of \pageref{LastPage}}{}
+\header{\exmCourse}{\ifprtans{\exmName\ Solutions}{\exmName}}{\rule{1.5cm}{0.4pt} out of \pointsonpage{\thepage}}
+\footer{\exmNum}{Page \thepage\ of \pageref{LastPage}}{\exmDate}
 \coverheader{}{}{}
 \coverfooter{\exmNum}{}{}
 \fi
@@ -77,13 +78,14 @@
   \fi
 }
 
-% set the question format
+%% set the question format
+\newcommand{\pointsdisplay}[2]{\IfStrEq{#1}{0}{\IfStrEq{#2}{0}{}{#2\ bonus\ points}}{#1\ points\IfStrEq{#2}{0}{}{,\ #2\ bonus\ points}}}
 \ifmockexam
-\qformat{\textbf{Question \thequestion.}\dotfill}
-\bonusqformat{\textbf{Question \thequestion. (Bonus)}\dotfill}
+\qformat{\textbf{Question \thequestion}\dotfill}
+\bonusqformat{\textbf{Question \thequestion}\dotfill\ Bonus Question}
 \else
-\qformat{\textbf{Question \thequestion.}\dotfill\rule{1.5cm}{0.4pt} out of \totalpoints\ points}
-\bonusqformat{\textbf{Question \thequestion. (Bonus)}\dotfill\rule{1.5cm}{0.4pt} out of \totalpoints\ points}
+\qformat{\textbf{Question \thequestion}\dotfill\pointsdisplay{\pointsofquestion{\arabic{question}}}{\bonuspointsofquestion{\arabic{question}}}}
+\bonusqformat{\textbf{Question \thequestion}\dotfill\pointsdisplay{\pointsofquestion{\arabic{question}}}{\bonuspointsofquestion{\arabic{question}}}}
 \fi
 
 % quick print macro to print different things if printanswers is enabled
@@ -170,7 +172,7 @@ If you have any questions during the exam, please raise your hand.}}}}
 {\LARGE This is a \textbf{Practice Exam}.}
 
 \vspace{0.5cm}
-These problems will be similar, but \underline{\textbf{different}}, from the problems on the real exam.}}}}
+These problems will be similar, but \underline{\textbf{different}}, from the problems on the actual exam.}}}}
 %coverpage
 \newcommand{\examCoverPages}{%
 \begin{coverpages}
@@ -186,15 +188,16 @@ These problems will be similar, but \underline{\textbf{different}}, from the pro
 {\LARGE \vspace{1cm} Practice Exam}
 \fi 
 
-% only provide student name field if solutions aren't being printed
+% only provide student name field if solutions aren't being printed and it's not a mock exam
 \ifprintanswers
 \vspace{1cm}
 {\Huge SOLUTIONS}
 \else
+\ifmockexam\else
 \vspace{5cm}
 \makebox[14cm]{\hrulefill}
 \makebox[\textwidth]{Student Name}
-\fi
+\fi\fi
 \clearpage
 
 \ifmockexam
@@ -204,13 +207,13 @@ These problems will be similar, but \underline{\textbf{different}}, from the pro
 \ifprintanswers
 \vspace{1cm}
 \ifthenelse{\equal{\numbonuspoints}{0}}
-{\pointtable[v][questions]}
-{\combinedpointtable[v][questions]}
+{\pointtable[v][pages]}
+{\combinedpointtable[v][pages]}
 \else
 \vspace{1cm}
 \ifthenelse{\equal{\numbonuspoints}{0}}
-{\gradetable[v][questions]}
-{\combinedgradetable[v][questions]}
+{\gradetable[v][pages]}
+{\combinedgradetable[v][pages]}
 
 \vspace{0.5cm}
 \def\arraystretch{1.5}%
