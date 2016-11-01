@@ -51,6 +51,7 @@
 \SolutionEmphasis{\color{darkgray}}
 
 % set header and footer
+\newcommand{\pagetotaldisplay}[2]{\IfStrEq{#1}{0}{\IfStrEq{#2}{0}{}{\rule{1.25cm}{0.4pt} of #2\ bonus points}}{\rule{1.25cm}{0.4pt} of #1 points\IfStrEq{#2}{0}{}{\ (+ #2 bonus)}}}
 \pagestyle{headandfoot}
 \ifmockexam
 \header{\exmCourse}{\ifprtans{\exmName Solutions}{\exmName}}{\textbf{Practice Exam}}
@@ -58,7 +59,7 @@
 \coverheader{}{}{}
 \coverfooter{\exmNum}{}{}
 \else
-\header{\exmCourse}{\ifprtans{\exmName\ Solutions}{\exmName}}{\rule{1.5cm}{0.4pt} out of \pointsonpage{\thepage}}
+\header{\exmCourse}{\ifprtans{\exmName\ Solutions}{\exmName}}{\pagetotaldisplay{\pointsonpage{\thepage}}{\bonuspointsonpage{\thepage}}}
 \footer{\exmNum}{Page \thepage\ of \pageref{LastPage}}{\exmDate}
 \coverheader{}{}{}
 \coverfooter{\exmNum}{}{}
@@ -79,7 +80,7 @@
 }
 
 %% set the question format
-\newcommand{\pointsdisplay}[2]{\IfStrEq{#1}{0}{\IfStrEq{#2}{0}{}{#2\ bonus\ points}}{#1\ points\IfStrEq{#2}{0}{}{,\ #2\ bonus\ points}}}
+\newcommand{\pointsdisplay}[2]{\IfStrEq{#1}{0}{\IfStrEq{#2}{0}{}{#2\ bonus\ points}}{#1\ points\IfStrEq{#2}{0}{}{\ and\ #2\ bonus\ points}}}
 \ifmockexam
 \qformat{\textbf{Question \thequestion}\dotfill}
 \bonusqformat{\textbf{Question \thequestion}\dotfill\ Bonus Question}
