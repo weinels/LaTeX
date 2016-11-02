@@ -54,7 +54,7 @@
 \newcommand{\pagetotaldisplay}[2]{\IfStrEq{#1}{0}{\IfStrEq{#2}{0}{}{\rule{1.25cm}{0.4pt} of #2\ bonus points}}{\rule{1.25cm}{0.4pt} of #1 points\IfStrEq{#2}{0}{}{\ (+ #2 bonus)}}}
 \pagestyle{headandfoot}
 \ifmockexam
-\header{\exmCourse}{\ifprtans{\exmName Solutions}{\exmName}}{\textbf{Practice Exam}}
+\header{\exmCourse}{\ifprtans{\exmName\ Solutions}{\exmName}}{\textbf{Practice Exam}}
 \footer{\exmNum}{Page \thepage\ of \pageref{LastPage}}{\exmDate}
 \coverheader{}{}{}
 \coverfooter{\exmNum}{}{}
@@ -242,27 +242,27 @@ Exam Grade&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
 \begin{tabular}{ll}
 $\int x^n \hspace{2pt}dx = \tfrac{1}{n+1}x^{n+1}, \hspace{1ex} n\neq-1$
 &
-$\int \frac{1}{x}\hspace{2pt}dx = \ln |x|$
+$\int \frac{1}{x}\hspace{2pt}dx=\ln\abs{x}$
 \\
 $\int u \hspace{2pt} \hspace{2pt}d{v} = uv - \int v du$
 &
 $\int e^x \hspace{2pt}dx = e^x$
 \\
-$\int a^x \hspace{2pt}dx = \tfrac{1}{\ln a} a^x$
+$\int a^x \hspace{2pt}dx = \tfrac{1}{\ln[a]} a^x$
 &
-$\int \ln x \hspace{2pt}dx = x \ln x - x$
+$\int \ln[x] \hspace{2pt}dx = x \ln[x] - x$
 \\
-$\int \sin x \hspace{2pt}dx = -\cos x$
+$\int \sin[x] \hspace{2pt}dx = -\cos[x]$
 &
-$\int \cos x \hspace{2pt}dx = \sin x$
+$\int \cos[x] \hspace{2pt}dx = \sin[x]$
 \\
-$\int \tan x \hspace{2pt}dx = \ln |\sec x|$
+$\int \tan[x] \hspace{2pt}dx = -\frac{1}{a} \ln \cos[ax] $
 &
-$\int \sec x \hspace{2pt}dx = \ln |\sec x + \tan x|$
+$\int \sec[x] \hspace{2pt}dx = \ln[\abs{\sec[x] + \tan[x]}]$
 \\
-$\int \sec^2 x \hspace{2pt}dx = \tan x$
+$\int \sec[x][2] \hspace{2pt}dx = \tan[x]$
 &
-$\int \sec x \tan x \hspace{2pt}dx = \sec x$
+$\int \sec[x] \tan[x] \hspace{2pt}dx = \sec[x]$
 \\
 $\int \tfrac{a}{a^2+x^2}\hspace{2pt}dx = \tan^{-1}\tfrac{x}{a}$
 &
@@ -270,11 +270,11 @@ $\int \tfrac{a}{a^2-x^2}\hspace{2pt}dx = \tfrac{1}{2}\ln\abs{\tfrac{x+a}{x-a}}$
 \\
 $\int \tfrac{1}{\sqrt{a^2-x^2}} \hspace{2pt}dx = \sin^{-1} \tfrac{x}{a}$
 &
-$\int \tfrac{a}{x \sqrt{x^2-a^2}} \hspace{2pt}dx = \sec^{-1} \tfrac{x}{a}$
+$\int \tfrac{a}{x \sqrt{x^2-a^2}} \hspace{2pt}dx = \sec[\tfrac{x}{a}][-1]$
 \\
-$\int \tfrac{1}{\sqrt{x^2-a^2}} \hspace{2pt}dx = \cosh^{-1} \tfrac{x}{a} = \nonumber \ln (x+\sqrt{x^2-a^2})$
+$\int \tfrac{1}{\sqrt{x^2-a^2}} \hspace{2pt}dx = \cosh^{-1}\left( \tfrac{x}{a} \right)= \nonumber \ln (x+\sqrt{x^2-a^2})$
 &
-$\int \tfrac{1}{\sqrt{x^2+a^2}} \hspace{2pt}dx = \sinh^{-1} \tfrac{x}{a} =\nonumber \ln (x+\sqrt{x^2+a^2})$
+$\int \tfrac{1}{\sqrt{x^2+a^2}} \hspace{2pt}dx =\nonumber \ln (x+\sqrt{x^2+a^2})$
 \end{tabular}
 \end{framed}
 \end{center}
