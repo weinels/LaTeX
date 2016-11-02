@@ -103,4 +103,4 @@ then
 	exit 1
 fi
 cp "$exampdf" exams/
-#rm -f $exam_rm
+rm -f $exam_rm
