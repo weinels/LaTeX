@@ -369,10 +369,10 @@ fi
 run_tex "draft" || run_tex "draft" || exit 1
 
 # process any asymptote files generated, running the tex again if needed
-(run_asy &&  run_tex "draft") || exit 1
+run_asy && run_tex "draft"
 
 # run one last time to generate the PDF
-run_tex || exit 1
+run_tex
 
 #get end time
 end=$(date +%s)

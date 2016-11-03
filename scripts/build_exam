@@ -65,7 +65,7 @@ shuffledexams=$(ls ${outdir}/${name}${sep}*.pdf | "${shufflecmd[@]}" | tr "\n" "
 # build a unnumbered makeup exam
 dialog --aspect 80 --infobox "Building Makeup Exam" 3 0
 
-N="makeup"
+N="MAKEUP"
 examtex="${name}${sep}$N.tex"
 exampdf="${name}${sep}$N.pdf"
 exam_rm="${name}${sep}$N*"
@@ -86,7 +86,7 @@ rm -f $exam_rm
 # build a unnumbered answer key
 dialog --aspect 80 --infobox "Building Solutions" 3 0
 
-N="solutions"
+N="SOLUTIONS"
 examtex="${name}${sep}$N.tex"
 exampdf="${name}${sep}$N.pdf"
 exam_rm="${name}${sep}$N*"
