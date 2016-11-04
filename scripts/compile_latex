@@ -159,6 +159,7 @@ function run_tex
 		return_code=$?
 
 		cp "$working_dir"/"$name".pdf ./
+		cp "$working_dir"/"$name".synctex.gz ./
 
 		draw_banner "$banner_width" "End LaTeX"
 		echo
