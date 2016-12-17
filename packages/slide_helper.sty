@@ -83,6 +83,19 @@
 {\begin{multistepslide}}%
 {\end{multistepslide}}
 
+% use the same symbol enumerate uses in ref
+\newcommand\enumref[1]{%
+  \begingroup
+  \usebeamerfont*{item projected}%
+  \usebeamercolor[bg]{item projected}%
+  \begin{pgfpicture}{-1ex}{0ex}{1ex}{2ex}
+    \pgfpathcircle{\pgfpoint{0pt}{.75ex}}{1.2ex}
+    \pgfusepath{fill}
+    \pgftext[base]{\color{fg}\ref{#1}}
+  \end{pgfpicture}%
+  \endgroup
+}
+
 % environments for dynamic shading on itemize and enumerate
 \newenvironment<>{dynitemize}[0]%
 {%

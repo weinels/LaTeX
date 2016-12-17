@@ -20,6 +20,7 @@
 \RequirePackage{lastpage}
 \RequirePackage{calc}
 \RequirePackage{xstring}
+\RequirePackage{afterpage}
 
 % mock exam option
 \newif\ifmockexam
@@ -218,9 +219,9 @@ These problems will be similar, but \underline{\textbf{different}}, from the pro
 
 \vspace{0.5cm}
 \def\arraystretch{1.5}%
-\begin{tabular}{|c|c|}
+\begin{tabular}{|c|m{2cm}|}
 \hline
-Exam Grade&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+Exam Grade&\\
 \hline
 \end{tabular}
 \def\arraystretch{1.0}%
@@ -280,11 +281,82 @@ $\int \tfrac{1}{\sqrt{x^2+a^2}} \hspace{2pt}dx =\nonumber \ln (x+\sqrt{x^2+a^2})
 \end{center}
 }
 
+\newcommand{\examLaplace}{%
+\begin{center}
+\textbf{\large Table of Laplace Transformations}
+
+~
+
+\tabulinesep=1.5mm
+\begin{tabu} to \linewidth {|X[$c] | X[$c] X[$l]|}
+\hline
+f(t)			& \laplace\{f(t)\} 			& 					\\
+\hline
+1				& \dfrac{1}{s} 					& s>0			\\
+t^n				& \dfrac{n!}{s^{n+1}} 			& s>0,~n\in\N^+	\\
+e^{at}			& \dfrac{1}{s-a} 				& s>a			\\
+t^n e^{at}		& \dfrac{n!}{{(s-a)}^{n+1}}		& s>a,~n\in\N^+	\\
+\sin[bt]		& \dfrac{b}{s^2+b^2}			& s>0			\\
+\cos[bt]		& \dfrac{s}{s^2+b^2}			& s>0			\\
+e^{at}\sin[bt]	& \dfrac{b}{{(s-a)}^2+b^2}		& s>a			\\
+e^{at}\cos[bt]	& \dfrac{s-a}{{(s-a)}^2+b^2}	& s>a			\\
+\sinh[bt]		& \dfrac{b}{s^2-b^2}			& s>\abs{b}		\\
+\cosh[bt]		& \dfrac{s}{s^2-b^2}			& s>\abs{b}		\\
+\hline
+\end{tabu}
+\end{center}}
+
 % Reference sheet for Differential Equations and Linear Algebra
-\newcommand{\examDELARef}{\examIntegrals}
+\newcommand{\examDELARef}{%
+\thispagestyle{headandfoot}
+\rhead{Reference Sheet}
+\examIntegrals
+\examLaplace}
 
 % Reference Sheet for College Algebra
+%\newsavebox\ellipsebox
+%\savebox\ellipsebox{%
+\newcommand{\ellipsebox}{%
+\begin{tabular}{c}
+$\dfrac{{(x-h)}^2}{a^2}+\dfrac{{(y-k)}^2}{b^2}=1$\\\\
+$\dfrac{{(y-k)}^2}{a^2}+\dfrac{{(x-h)}^2}{b^2}=1$\\\\
+where\\
+$b^2=a^2-c^2$
+\end{tabular}%
+}
+	
+%\newsavebox\hyperbolabox
+%\savebox\hyperbolabox{%
+\newcommand{\hyperbolabox}{%
+\begin{tabular}{c}
+$\dfrac{{(x-h)}^2}{a^2}-\dfrac{{(y-k)}^2}{b^2}=1$\\\\
+$y-k=\pm\dfrac{b}{a}(h-h)$\\\\
+$\dfrac{{(y-k)}^2}{a^2}-\dfrac{{(x-h)}^2}{b^2}=1$\\\\
+$y-k=\pm\dfrac{a}{b}(x-h)$\\\\
+where\\\\
+$b^2=c^2-a^2$
+\end{tabular}%
+}
+
+%\newsavebox\parabolabox
+%\savebox\parabolabox{%
+\newcommand{\parabolabox}{%
+\begin{tabular}{c}
+${(y-k)}^2=4a(x-h)$\\\\
+${(x-h)}^2=4a(y-k)$
+\end{tabular}%
+}
+	
 \newcommand{\examCARef}{%
+\thispagestyle{headandfoot}
+\rhead{Reference Sheet}
+\begin{center}
+\tabulinesep=1mm
+\begin{tabu} to \linewidth {|X[c]|X[c]|X[c]|}
+\firsthline
+\ellipsebox & \hyperbolabox & \parabolabox\\\lasthline
+\end{tabu}
+\end{center}
 }
 \endinput
 %%
