@@ -211,8 +211,10 @@ EOF
 
 # configuration
 
-add_course "MATH 1050" "/Users/weinels/Dropbox/Instructor/SLCC/Course Materials/MATH 1050/Lecture Slides/"
-add_course "MATH 2250" "/Users/weinels/Dropbox/Instructor/SLCC/Course Materials/MATH 2250/Lecture Slides/"
+add_course "MATH 2250 Chapter 5" "/Users/weinels/Dropbox/Instructor/SLCC/Course Materials/MATH 2250/Lecture Slides/Chapter_5"
+add_course "MATH 2250 Chapter 1" "/Users/weinels/Dropbox/Instructor/SLCC/Course Materials/MATH 2250/Lecture Slides/Chapter_1"
+add_course "MATH 2250 Chapter 3" "/Users/weinels/Dropbox/Instructor/SLCC/Course Materials/MATH 2250/Lecture Slides/Chapter_3"
+add_course "MATH 2250 Chapter 4" "/Users/weinels/Dropbox/Instructor/SLCC/Course Materials/MATH 2250/Lecture Slides/Chapter_4"
 
 # run the actual script
 while true
