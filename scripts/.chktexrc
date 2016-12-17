@@ -334,6 +334,8 @@ Silent
     \headerline \examCARef \examDELARef \mockexam \choice \CorrectChoice
 
     \hideasymptote \draw \in
+
+    \leq \geq \footnotemark
 }
 
 #####################################################################
@@ -428,7 +430,7 @@ MathEnvir
 
 VerbEnvir
 {
-    verbatim comment listing verbatimtab rawhtml errexam picture texdraw asymptote asy tabular tabu
+    verbatim comment listing verbatimtab rawhtml errexam picture texdraw asymptote asy asydef tabular tabu
 }
 
 #####################################################################
