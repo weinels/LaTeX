@@ -37,8 +37,9 @@ XXX
 EOF
 
 	cp "$filename" "$examtex"
-	sed -i -e "s/^.*$printanscmd.*\$//g" "$examtex"
+#	sed -i -e "s/^.*$printanscmd.*\$//g" "$examtex"
 	sed -i -e "s/$tag/$N/g" "$examtex"
+	"${latexcmd[@]}" "$examtex"
 	"${latexcmd[@]}" "$examtex"
 	
 	if [ "$?" != "0" ]
@@ -71,8 +72,9 @@ exampdf="${name}${sep}$N.pdf"
 exam_rm="${name}${sep}$N*"
 
 cp "$filename" "$examtex"
-sed -i -e "s/^.*$printanscmd.*\$//g" "$examtex"
+#sed -i -e "s/^.*$printanscmd.*\$//g" "$examtex"
 sed -i -e "s/$tag/$N/g" "$examtex"
+"${latexcmd[@]}" "$examtex"
 "${latexcmd[@]}" "$examtex"
 
 if [ "$?" != "0" ]
@@ -92,9 +94,10 @@ exampdf="${name}${sep}$N.pdf"
 exam_rm="${name}${sep}$N*"
 
 cp "$filename" "$examtex"
-sed -i -e "s/^.*$printanscmd.*\$//g" "$examtex"
+#sed -i -e "s/^.*$printanscmd.*\$//g" "$examtex"
 sed -i -e "s/$tag/$N/g" "$examtex"
 sed -i -e '2s/^/\\printanswers /' "$examtex"
+"${latexcmd[@]}" "$examtex"
 "${latexcmd[@]}" "$examtex"
 
 if [ "$?" != "0" ]
