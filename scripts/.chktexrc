@@ -335,7 +335,7 @@ Silent
 
     \hideasymptote \draw \in
 
-    \leq \geq \footnotemark
+    \leq \geq \footnotemark \hrulefill
 }
 
 #####################################################################
