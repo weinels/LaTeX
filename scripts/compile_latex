@@ -345,7 +345,7 @@ fi
 mkdir -p "$working_dir"
 
 # copy the file into the working dir
-cp "$filename" "$working_dir"/"$filename"
+cp *.tex "$working_dir"/
 
 # move into the working dir
 cd "$working_dir"

@@ -9,24 +9,85 @@
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{syllabus_helper}
   [2016/09/30 v0.1 Package to provide standardization to the formatting of syllabi.]
+  
+\RequirePackage{general_macros}
+\RequirePackage[calc, useregional, datesep=/]{datetime2}
+\RequirePackage{termcal}
+\RequirePackage{xparse}
 
-%holidays
-\DTMsavedate{MLK}{2016-01-18}
-\DTMsavedate{PresidentsDay}{2016-02-15}
-\DTMsavedate{SpringBreak1}{2016-03-14}
-\DTMsavedate{SpringBreak2}{2016-03-15}
-\DTMsavedate{SpringBreak3}{2016-03-16}
-\DTMsavedate{SpringBreak4}{2016-03-17}
-\DTMsavedate{SpringBreak5}{2016-03-18}
-\DTMsavedate{SpringBreak6}{2016-03-19}
-\DTMsavedate{MemorialDay}{2016-5-30}
-\DTMsavedate{IndependenceDay}{2016-7-4}
-\DTMsavedate{PioneerDay}{2016-7-25}
-\DTMsavedate{LaborDay}{2015-9-7}
-\DTMsavedate{FallBreak1}{2015-10-15}
-\DTMsavedate{FallBreak2}{2015-10-16}
-\DTMsavedate{Thanksgiving1}{2015-11-26}
-\DTMsavedate{Thanksgiving2}{2015-11-27}
+\NewDocumentCommand\homeworklist{>{\SplitList{,}}m}
+{%
+  \ProcessList{#1}{\homeworkitem}%
+  \firstitemtrue
+}
+
+\newif\iffirstitem
+\firstitemtrue   
+\newcommand\homeworkitem[1]{%
+  \iffirstitem
+    \firstitemfalse
+  \else
+    ,\ %
+  \fi
+  #1}
+
+\ExplSyntaxOn
+\newcommand{\homeworklistreset}[0]{\taburowcolors[2] 2{gray!30 .. white}}
+\newcommand{\homeworkline}[2]{#1&\clist_count:n {#2}&\homeworklist{#2}\\\hline}
+
+% set date format
+\DTMsetdatestyle{mdyyyy}
+
+% command for adding holidays to a calendar
+\newcommand{\holiday}[2]{\options{\DTMusedate{#1}}{\noclassday}\caltext{\DTMusedate{#1}}{#2\\No Classes}}
+
+\DTMnewdatestyle{DOWMonthDay}{%
+% ##1 = year
+% ##2 = month
+% ##3 = day
+% ##4 = dow
+\renewcommand*{\DTMdisplaydate}[4]{\DTMenglishweekdayname{##4} \DTMenglishmonthname{##2}
+% ordinals function from the language pack doesn't seem to be working, so I recreated it below
+\number##3 % space intended
+\textsuperscript{%
+\ifcase##3
+\or \DTMenglishst
+\or \DTMenglishnd
+\or \DTMenglishrd
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishst
+\or \DTMenglishnd
+\or \DTMenglishrd
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishth
+\or \DTMenglishst
+\fi}}%
+\renewcommand*{\DTMDisplaydate}{\DTMdisplaydate}%
+}
+\DTMsetdatestyle{DOWMonthDay}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
 
 %%
 \endinput
