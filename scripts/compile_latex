@@ -10,7 +10,7 @@ current_dir="$(pwd)"
 file_extensions=(tex)
 
 # add any additional search paths here (don't escape spaces) (keep the :: at the very end)
-export TEXINPUTS="$HOME/LaTeX/packages/:$current_dir/::"
+export TEXINPUTS="$HOME/LaTeX/packages/:$HOME/LaTeX/classes/:$current_dir/::"
 
 # set the command line options for the programs invoked in this script
 chkcmd=(chktex -l "$HOME/LaTeX/scripts/.chktexrc" -q)

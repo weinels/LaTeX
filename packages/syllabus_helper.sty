@@ -15,6 +15,8 @@
 \RequirePackage{termcal}
 \RequirePackage{xparse}
 
+\DTMsetdatestyle{mdyyyy}
+
 \NewDocumentCommand\homeworklist{>{\SplitList{,}}m}
 {%
   \ProcessList{#1}{\homeworkitem}%
@@ -35,20 +37,18 @@
 \newcommand{\homeworklistreset}[0]{\taburowcolors[2] 2{gray!30 .. white}}
 \newcommand{\homeworkline}[2]{#1&\clist_count:n {#2}&\homeworklist{#2}\\\hline}
 
-% set date format
-\DTMsetdatestyle{mdyyyy}
-
 % command for adding holidays to a calendar
-\newcommand{\holiday}[2]{\options{\DTMusedate{#1}}{\noclassday}\caltext{\DTMusedate{#1}}{#2\\No Classes}}
+\newcommand{\holiday}[2]{\options{\DTMusedate{#1}}{\noclassday}\caltext{\DTMusedate{#1}}{#2\\No~Classes}}
 
 \DTMnewdatestyle{DOWMonthDay}{%
 % ##1 = year
 % ##2 = month
 % ##3 = day
 % ##4 = dow
-\renewcommand*{\DTMdisplaydate}[4]{\DTMenglishweekdayname{##4} \DTMenglishmonthname{##2}
+\renewcommand*{\DTMdisplaydate}[4]{% 
+\DTMenglishweekdayname{##4}~\DTMenglishmonthname{##2}~
 % ordinals function from the language pack doesn't seem to be working, so I recreated it below
-\number##3 % space intended
+\number##3~
 \textsuperscript{%
 \ifcase##3
 \or \DTMenglishst
@@ -85,10 +85,13 @@
 \fi}}%
 \renewcommand*{\DTMDisplaydate}{\DTMdisplaydate}%
 }
-\DTMsetdatestyle{DOWMonthDay}
 
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
 
+\newcommand{\prettydate}[1]{%
+\DTMsetdatestyle{DOWMonthDay}
+\DTMusedate{#1}
+\DTMsetdatestyle{mdyyyy}}
 %%
 \endinput
 %%
