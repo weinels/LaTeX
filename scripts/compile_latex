@@ -171,32 +171,33 @@ function run_asy
 {
 	draw_banner "$banner_width" "Start Asymptote"
 
-	count=0
-	for f in $("${gnuls[@]}" "-1v" "$name"-*.asy 2> /dev/null)
-	do
-		if [ -e "$f.old" ]
-		then
-			diff "$f" "$f.old" 2>&1 >/dev/null
-			if [ "$?" = "0" ]
-			then
-				echo "Unaffected: $f"
-				continue
-			fi
-		fi
+	python3.6 ~/LaTeX/scripts/build_asy.py
+#	count=0
+#	for f in $("${gnuls[@]}" "-1v" "$name"-*.asy 2> /dev/null)
+#	do
+#		if [ -e "$f.old" ]
+#		then
+#			diff "$f" "$f.old" 2>&1 >/dev/null
+#			if [ "$?" = "0" ]
+#			then
+#				echo "Unaffected: $f"
+#				continue
+#			fi
+#		fi
 
-		echo "Processing: $f"
-		output=$("${asycmd[@]}" "$f" 2>&1 >/dev/null)
+#		echo "Processing: $f"
+#		output=$("${asycmd[@]}" "$f" 2>&1 >/dev/null)
 
-		if [ "$output" != "" ]
-		then
-			echo "$output"
-			exit 1
-		fi
+#		if [ "$output" != "" ]
+#		then
+#			echo "$output"
+#			exit 1
+#		fi
 
-		cp "$f" "$f.old"
+#		cp "$f" "$f.old"
 		
-		count=$((count+1))
-	done
+#		count=$((count+1))
+#	done
 	
 	draw_banner "$banner_width" "End Asymptote"
 	echo
