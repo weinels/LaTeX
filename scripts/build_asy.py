@@ -35,12 +35,11 @@ def write_hashes(path, files):
 			f.write("{file} {hash}\n".format(file=fn, hash=h))
 
 def run_asy(path):
-	output = subprocess.run(['asy', '-q', path], stdout=subprocess.PIPE)
-	if output.returncode == 0:
-		print(pathlib.Path(path).name)
-	else:
-		print("{0} ERROR:\n {1}".format(pathlib.Path(path).name, output.stdout))
-		sys.exit(1)
+	output = subprocess.run(['asy', '-q', path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8")
+	if output.stdout != "":
+		return "{0}:\n{1}".format(pathlib.Path(path).name, output.stdout)
+
+	return ""
 			
 if __name__ == "__main__":
 	p = pathlib.Path(".")
@@ -100,12 +99,28 @@ if __name__ == "__main__":
 
 	# process the changed files
 	if len(new) > 0:
-		print("Processing:")
+		print("Processing... ", end='', flush=False)
 
-		# create the pool
-		with multiprocessing.Pool(os.cpu_count()) as pool:
+		if len(new) == 1:
+			# with only one item, no need to build a worker pool
+			run_asy(new[0])
 
-			# set the pool to work on the changed files
-			pool.map(run_asy, new)
-	
-	write_hashes(hash_file, files)
+		else:
+			# create the pool
+			with multiprocessing.Pool(os.cpu_count()) as pool:
+
+				# set the pool to work on the changed files
+				res = pool.map(run_asy, new)
+
+		print("Done.")
+
+		must_exit = False
+		for r in res:
+			if len(r) > 0:
+				print(r)
+				must_exit = True
+
+		if must_exit:
+			sys.exit(1)
+		else:
+			write_hashes(hash_file, files)
