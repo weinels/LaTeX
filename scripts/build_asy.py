@@ -18,8 +18,7 @@ def load_hashes(path):
 		with open(path, 'r') as f:
 			for line in f:
 				# split the line
-				item = line.strip().split(' ')
-
+				item = line.strip().split('\t')
 				# only add the file to the dict if the corresponding pdf is still there
 				p = pathlib.Path(item[0][:-4] + "_0.pdf")
 				if p.exists():
@@ -32,7 +31,7 @@ def load_hashes(path):
 def write_hashes(path, files):
 	with open(path, 'w') as f:
 		for fn, h in files.items():
-			f.write("{file} {hash}\n".format(file=fn, hash=h))
+			f.write("{file}\t{hash}\n".format(file=fn, hash=h))
 
 def run_asy(path):
 	output = subprocess.run(['asy', '-q', path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8")
@@ -74,53 +73,55 @@ if __name__ == "__main__":
 	old_hashes = load_hashes(hash_file)
 
 	# to track changed and unchaged files
-	old = []
 	new = []
 
-	for fn, h in files.items():
+	# Not the most efficent way, but the output is nicer to read
+	keys = list(files.keys())
+	keys.sort(key=natural_sort_key)
+	
+	for fn in keys:
+		h = files[fn]
+#		print("{0} :: {1}".format(fn,h))
 		# seperate the files into changed and unchanged
 		if fn in old_hashes:
+#			print("{0} ?? {1}".format(h,old_hashes[fn]))
 			if h == old_hashes[fn]:
-				old.append(fn)
+				print("Unchanged: {0}".format(fn))
 			else:
+				print("  Changed: {0}".format(fn))
 				new.append(fn)
 		else:
+			print("      New: {0}".format(fn))
 			new.append(fn)
 
-	# sort lists
-	old.sort(key=natural_sort_key)
-	new.sort(key=natural_sort_key)
-			
-	# list the unchanged files
-	if len(old) > 0:
-		print("Unchanged:")
-		for fn in old:
-			print(pathlib.Path(fn).name)
-
 	# process the changed files
-	if len(new) > 0:
-		print("Processing... ", end='', flush=False)
+	output = []
 
-		if len(new) == 1:
-			# with only one item, no need to build a worker pool
-			run_asy(new[0])
+	print("Processing {0} file(s)... ".format(len(new)), end='', flush=True)
 
-		else:
-			# create the pool
-			with multiprocessing.Pool(os.cpu_count()) as pool:
+	if len(new) <= 1 or os.cpu_count() == 1:
+		# with only one item, no need to build a worker pool
+		for f in new:
+			output.append(run_asy(f))
 
-				# set the pool to work on the changed files
-				res = pool.map(run_asy, new)
+	else:
 
-		print("Done.")
+		print("Using {0} subprocesses... ".format(os.cpu_count()), end='', flush=True)
+		# create the pool
+		with multiprocessing.Pool(os.cpu_count()) as pool:
 
-		must_exit = False
-		for r in res:
-			if len(r) > 0:
-				print(r)
-				must_exit = True
+			# set the pool to work on the changed files
+			output = pool.map(run_asy, new)
 
-		if must_exit:
-			sys.exit(1)
-		else:
-			write_hashes(hash_file, files)
+	print("Done.")
+
+	must_exit = False
+	for r in output:
+		if len(r) > 0:
+			print(r)
+			must_exit = True
+
+	if must_exit:
+		sys.exit(1)
+	else:
+		write_hashes(hash_file, files)
