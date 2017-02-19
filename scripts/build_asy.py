@@ -79,25 +79,29 @@ if __name__ == "__main__":
 	keys = list(files.keys())
 	keys.sort(key=natural_sort_key)
 	
-	for fn in keys:
-		h = files[fn]
+	for f in keys:
+		fn = pathlib.Path(f).name
+		h = files[f]
 #		print("{0} :: {1}".format(fn,h))
 		# seperate the files into changed and unchanged
-		if fn in old_hashes:
+		if f in old_hashes:
 #			print("{0} ?? {1}".format(h,old_hashes[fn]))
-			if h == old_hashes[fn]:
+			if h == old_hashes[f]:
 				print("Unchanged: {0}".format(fn))
 			else:
 				print("  Changed: {0}".format(fn))
-				new.append(fn)
+				new.append(f)
 		else:
 			print("      New: {0}".format(fn))
-			new.append(fn)
+			new.append(f)
 
 	# process the changed files
 	output = []
 
-	print("Processing {0} file(s)... ".format(len(new)), end='', flush=True)
+	if len(new) == 1:
+		print("Processing 1 file... ", end='', flush=True)
+	else:
+		print("Processing {0} files... ".format(len(new)), end='', flush=True)
 
 	if len(new) <= 1 or os.cpu_count() == 1:
 		# with only one item, no need to build a worker pool
