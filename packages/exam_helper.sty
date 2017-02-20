@@ -31,6 +31,7 @@
 \ProcessOptions\relax
 % exam info
 \newcommand{\exmName}{Exam Name}
+\newcommand{\exmSubTitle}{}
 \newcommand{\exmDate}{Date Exam is given}
 \newcommand{\exmSemester}{Semester}
 \newcommand{\exmInstructor}{Instructor Name}
@@ -40,6 +41,7 @@
 
 % to set course info
 \newcommand{\setExamName}[1]{\renewcommand{\exmName}{#1}}
+\newcommand{\setExamSubTitle}[1]{\renewcommand{\exmSubTitle}{\\\vspace{5mm}#1}}
 \newcommand{\setExamDate}[1]{\renewcommand{\exmDate}{#1}}
 \newcommand{\setSemester}[1]{\renewcommand{\exmSemester}{#1}}
 \newcommand{\setInstructor}[1]{\renewcommand{\exmInstructor}{#1}}
@@ -184,7 +186,7 @@ These problems will be similar, but \underline{\textbf{different}}, from the pro
 \exmSemester
 
 \vspace{4cm}
-{\Huge\textbf{\exmName}}
+{\Huge\textbf{\exmName\exmSubTitle}}
 
 \ifmockexam
 {\LARGE \vspace{1cm} Practice Exam}
