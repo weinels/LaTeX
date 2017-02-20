@@ -171,7 +171,7 @@ function run_asy
 {
 	draw_banner "$banner_width" "Start Asymptote"
 
-	exit 1
+	python3.6 ~/LaTeX/scripts/build_asy.py || exit 1
 	
 #	count=0
 #	for f in $("${gnuls[@]}" "-1v" "$name"-*.asy 2> /dev/null)
@@ -367,8 +367,7 @@ start=$(date +%s)
 run_tex "draft" || run_tex "draft" || exit 1
 
 # process any asymptote files generated, running the tex again if needed
-#run_asy && run_tex "draft"
-python3.6 ~/LaTeX/scripts/build_asy.py || exit 1 && run_tex "draft"
+run_asy && run_tex "draft"
 
 # run one last time to generate the PDF
 run_tex
