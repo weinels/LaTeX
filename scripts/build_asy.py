@@ -35,10 +35,8 @@ def write_hashes(path, files):
 
 def run_asy(path):
 	output = subprocess.run(['asy', '-q', path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8")
-	if output.stdout != "":
-		return "{0}:\n{1}".format(pathlib.Path(path).name, output.stdout)
 
-	return ""
+	return [path, output.stdout]
 			
 if __name__ == "__main__":
 	p = pathlib.Path(".")
@@ -119,13 +117,23 @@ if __name__ == "__main__":
 
 	print("Done.")
 
-	must_exit = False
-	for r in output:
-		if len(r) > 0:
-			print(r)
-			must_exit = True
+	errors = False
+	for fn, out in output:
+		# asy doesn't use exit status. So, we assume any output means an error
+		if len(out) > 0:
+			# print the error
+			print("{0}:\n{1}".format(pathlib.Path(fn).name, out))
 
-	if must_exit:
+			# clear the files hash, so it will be processed next time
+			files[fn] = "-- Had Errors --".center(len(files[fn]))
+			
+			# signal that at least one error occured
+			errors = True
+
+	# update the hash file
+	write_hashes(hash_file, files)
+	
+	if errors:
 		sys.exit(1)
 	else:
-		write_hashes(hash_file, files)
+		sys.exit(0)
