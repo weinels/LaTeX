@@ -430,7 +430,7 @@ MathEnvir
 
 VerbEnvir
 {
-    verbatim comment listing verbatimtab rawhtml errexam picture texdraw asymptote asy asydef tabular tabu
+    verbatim comment listing verbatimtab rawhtml errexam picture texdraw asymptote asy asydef tabular tabu lstlisting
 }
 
 #####################################################################
