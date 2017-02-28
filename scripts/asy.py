@@ -1,17 +1,27 @@
 import pathlib
 import hashlib
-import sys
 import subprocess
 import multiprocessing
 import os
 import re
+import sys
 
+# key for performing a natural sort
 def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
     return [int(text) if text.isdigit() else text.lower()
             for text in re.split(_nsre, s)] 
 
+# exception to handle asymptote errors
+class AsyError(Exception):
+	def __init__(self, path="", stdout="", stderr=""):
+		self.path = path
+		self.file = pathlib.Path(path).name
+		self.stdout = stdout
+		self.stderr = stderr
+	    	    
 BLOCKSIZE = 65536
 
+# build a hash for every file in the passed path
 def load_hashes(path):
 	hashes = {}
 	try:
@@ -28,20 +38,25 @@ def load_hashes(path):
 
 	return hashes
 
+# write out the hashes
 def write_hashes(path, files):
 	with open(path, 'w') as f:
 		for fn, h in files.items():
 			f.write("{file}\t{hash}\n".format(file=fn, hash=h))
 
+# run asy on a given file
 def run_asy(path):
-	output = subprocess.run(['asy', '-q', path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8")
+	output = subprocess.run(['asy', '-q', str(path)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8")
 
+	# since asy doesn't respect return codes for stderr, we have to assume that any output means an error.
+	if len(output.stdout) > 0:
+		raise AsyError(str(path), output.stdout)
+		
 	return [path, output.stdout]
-			
-if __name__ == "__main__":
-	p = pathlib.Path(".")
 
-	hash_file = "asy.hashes"
+# run asy on all valid files in path, will return the number of files processed
+def process(files_path, hashes_path, verbose=True):
+	p = pathlib.Path(files_path)
 	
 	files = {}
 
@@ -49,6 +64,8 @@ if __name__ == "__main__":
 	for fp in p.glob("*.asy"):
 		# hash the file
 		h = hashlib.md5()
+
+		# read the file in as binary
 		with fp.open('br') as f:
 			while True:
 				buffer = f.read(BLOCKSIZE)
@@ -58,17 +75,16 @@ if __name__ == "__main__":
 					
 				h.update(buffer)
 
-		# add file to dict
+		# add hash to dict
 		hash = h.hexdigest()
 		files[str(fp.resolve())] = hash
 
 	# if there were not asymptote files, then exit
 	if len(files) == 0:
-		print("No Asymptote files found.")
-		sys.exit(0)
+		return 0
 
 	# load the previous hashes
-	old_hashes = load_hashes(hash_file)
+	old_hashes = load_hashes(hashes_path)
 
 	# to track changed and unchaged files
 	new = []
@@ -80,26 +96,28 @@ if __name__ == "__main__":
 	for f in keys:
 		fn = pathlib.Path(f).name
 		h = files[f]
-#		print("{0} :: {1}".format(fn,h))
 		# seperate the files into changed and unchanged
 		if f in old_hashes:
-#			print("{0} ?? {1}".format(h,old_hashes[fn]))
 			if h == old_hashes[f]:
-				print("Unchanged: {0}".format(fn))
+				if verbose:
+					print("Unchanged: {0}".format(fn))
 			else:
-				print("  Changed: {0}".format(fn))
+				if verbose:
+					print("  Changed: {0}".format(fn))
 				new.append(f)
 		else:
-			print("      New: {0}".format(fn))
+			if verbose:
+				print("      New: {0}".format(fn))
 			new.append(f)
 
 	# process the changed files
 	output = []
 
-	if len(new) == 1:
-		print("Processing 1 file... ", end='', flush=True)
-	else:
-		print("Processing {0} files... ".format(len(new)), end='', flush=True)
+	if verbose:
+		if len(new) == 1:
+			print("Processing 1 file... ", end='', flush=True)
+		else:
+			print("Processing {0} files... ".format(len(new)), end='', flush=True)
 
 	if len(new) <= 1 or os.cpu_count() == 1:
 		# with only one item, no need to build a worker pool
@@ -107,33 +125,28 @@ if __name__ == "__main__":
 			output.append(run_asy(f))
 
 	else:
-
-		print("Using {0} subprocesses... ".format(os.cpu_count()), end='', flush=True)
+		if verbose:
+			print("Using {0} subprocesses... ".format(os.cpu_count()), end='', flush=True)
+			
 		# create the pool
 		with multiprocessing.Pool(os.cpu_count()) as pool:
 
 			# set the pool to work on the changed files
 			output = pool.map(run_asy, new)
 
-	print("Done.")
-
-	errors = False
-	for fn, out in output:
-		# asy doesn't use exit status. So, we assume any output means an error
-		if len(out) > 0:
-			# print the error
-			print("{0}:\n{1}".format(pathlib.Path(fn).name, out))
-
-			# clear the files hash, so it will be processed next time
-			files[fn] = "-- Had Errors --".center(len(files[fn]))
-			
-			# signal that at least one error occured
-			errors = True
-
-	# update the hash file
-	write_hashes(hash_file, files)
+	if verbose:
+		print("Done.")
 	
-	if errors:
-		sys.exit(1)
-	else:
+	# update the hash file
+	write_hashes(hashes_path, files)
+
+	return len(new)
+
+# if this file is ran, then it will just process all .asy files in the current directory
+if __name__ == "__main__":
+	try:
+		process(".", "asy.hashes")
 		sys.exit(0)
+	except AsyError as e:
+		print("\nError in {0}:\n{1}".format(e.file, e.stdout))
+		sys.exit(1)
