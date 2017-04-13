@@ -333,7 +333,7 @@ Silent
     \printanswers \examCoverPages \question \part \ifprintanswers
     \headerline \examCARef \examDELARef \mockexam \choice \CorrectChoice
 
-    \hideasymptote \draw \in
+    \hideasymptote \draw \in \int
 
     \leq \geq \footnotemark \hrulefill
 }

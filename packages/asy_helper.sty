@@ -1,0 +1,105 @@
+% Exam helper
+% 
+% by Adam Wilson
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+% 
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{asy_helper}
+  [2016/09/30 v0.1 Package to provide commonly used asymptote functions.]
+  
+\RequirePackage[inline]{asymptote}
+
+\begin{asydef}
+import graph;
+import fontsize;
+defaultpen(fontsize(9pt));
+ngraph=1000;
+
+\end{asydef}
+
+% functions to draw triangles
+\begin{asydef}
+// draw a label that consists of '$var=val' at pos.
+// val is rounded to two decimal places
+void vlabel(string var, real val, pair pos)
+{
+	label("$" + var + "=" + string(round(val*100)/100) + "$", pos, UnFill());
+}
+
+// draw a ASS triangle
+void draw_ass_triangle(real alpha, real a, real b, bool answers=false)
+{
+    // calc the remaining values
+    real beta = asin((b/a)*sin(alpha));
+    real gamma = pi-alpha-beta;
+    real c = sqrt(a*a+b*b-2*a*b*cos(gamma));
+    real b_x = b*cos(alpha);
+    real b_y = b*sin(alpha);
+    
+    // pens
+    pen p = black+1bp;
+    pen pdash = lightgrey + 1bp;//black + dotted +1bp;
+    
+    if (answers)
+    	pdash = p;
+    
+    real r = 0.2*c;
+    
+    // calculate the arc offsets
+    real beta_s = 180;
+    real beta_e = beta_s-degrees(beta);
+    real gamma_s = degrees(pi+alpha);
+    real gamma_e = gamma_s+degrees(gamma);
+    
+    // draw the angle arcs
+    draw(arc((0,0), r, 0, degrees(alpha)), p); 
+    draw(arc((b_x,b_y), r, gamma_s, gamma_e), pdash); 
+    draw(arc((c,0), r, beta_s, beta_e), pdash);
+    
+    // draw the sides
+    draw((0,0) -- (c,0), pdash);
+    draw((0,0) -- (b_x, b_y), p);
+    draw((b_x, b_y) -- (c, 0), p);
+    
+    // draw the labels
+    if (answers)
+    {
+    	real rl = 0.2+r;
+	    vlabel("\alpha", alpha, (rl*cos(alpha/2),rl*sin(alpha/2)));
+	    vlabel("\beta", beta, (c+rl*-1*cos(beta/2), rl*sin(beta/2)));
+	    vlabel("\gamma", gamma, (b_x+rl*cos(pi+alpha+gamma/2), b_y+rl*sin(pi+alpha+gamma/2)));
+	    vlabel("a", a, ((b_x+c)/2+0.45,b_y/2));
+	    vlabel("b", b, (b_x/2-0.45,b_y/2));
+	    vlabel("c", c, (c/2,-0.2));
+	}
+	else
+	{
+		real rl = 0.2+r;
+		label("$\alpha$", (rl*cos(alpha/2),rl*sin(alpha/2)));
+	    label("$\beta$", (c+rl*-1*cos(beta/2), rl*sin(beta/2)));
+	    label("$\gamma$", (b_x+rl*cos(pi+alpha+gamma/2), b_y+rl*sin(pi+alpha+gamma/2)));
+	   	label("$a$", ((b_x+c)/2+0.2,b_y/2));
+	    label("$b$", (b_x/2-0.2,b_y/2));
+	    label("$c$", (c/2,-0.2));
+	}
+}
+
+void draw_polar_axes(int r_a, int r_b)
+{
+	pen p = mediumgrey + 1bp;
+	for(int r = r_a; r <= r_b; ++r)
+	{
+		draw(circle((0,0), r), p);
+	}
+	
+	real[] angles = {0, pi/6, pi/4, pi/3, pi/2, 2pi/3, 3pi/4, 5pi/6};
+	for(real a: angles)
+	{
+		draw((-r_b*cos(a),-r_b*sin(a)) -- (r_b*cos(a),r_b*sin(a)), p);
+	}
+}
+\end{asydef}
+\endinput
