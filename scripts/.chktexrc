@@ -333,7 +333,7 @@ Silent
     \printanswers \examCoverPages \question \part \ifprintanswers
     \headerline \examCARef \examDELARef \mockexam \choice \CorrectChoice
 
-    \hideasymptote \draw \in \int
+    \hideasymptote \draw \in \int \pm
 
     \leq \geq \footnotemark \hrulefill
 }
@@ -404,7 +404,7 @@ WipeArg
     \label:{} \ref:{} \vref:{} \pageref:{} \index:{} \cite:[]{}
     \input:{} \verbatiminput:[]{} \listinginput:[]{}{}
     \verbatimtabinput:[]{} \include:{} \includeonly:{} 
-    \bibitem:[]{}
+    \bibitem:[]{} \lstset:[][]{}
 }
 
 #####################################################################
