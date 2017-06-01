@@ -15,9 +15,88 @@
 \begin{asydef}
 import graph;
 import fontsize;
+import slopefield;
 defaultpen(fontsize(9pt));
 ngraph=1000;
+\end{asydef}
 
+% generate isoclines
+\begin{asydef}
+guide[] isocline(real f(real), real yp(real, real), real min_t, real max_t, int n=10, real width=-1)
+{
+	if (min_t == max_t)
+		return null;
+		
+	// max sure min_t < max_t
+	if (max_t < min_t)
+	{
+		real tmp = max_t;
+		max_t = min_t;
+		min_t = tmp;
+	}
+	
+	// size of t-values
+	real size=max_t - min_t;
+	
+	// default width
+	if (width < 0)
+		width = size/n * 0.5;
+		
+	guide[] guides;	
+	
+	// break the domain in into n intervals of equal length along the curve
+	real[] tvals;
+	guide curve = graph(f, min_t, max_t);
+	
+	for(int i = 0; i <= n; ++i)
+	{
+		real l = ((real) i)/((real) n);
+		pair p = relpoint(curve, l);
+		tvals.push(p.x);
+	}
+
+	// draw tangent line segments
+	for (real t : tvals)
+	{
+		real m = yp(t, f(t));
+		real t_0 = t;
+		real y_0 = f(t);
+		
+		real tangent(real t) { return m*(t - t_0) + y_0; }
+		
+		real D = width/2;
+		
+		real t_1 = t_0 + sqrt(D*D/(m*m+1));
+		real t_2 = t_0 - sqrt(D*D/(m*m+1));
+		
+		//write("t_1 = " + string(t_1));
+		//write("t_2 = " + string(t_1));
+		
+		guide g = graph(tangent, t_1, t_2);
+		guides.push(g);
+	}
+	return guides;
+}
+\end{asydef}
+
+% graphing helper functions
+\begin{asydef}
+int pen_pos=-1;
+pen[] pens={blue, red, heavycyan, heavymagenta, lightolive};
+pens.cyclic=true;
+pen next_color() {return pens[++pen_pos];}
+void reset_color() {pen_pos = -1;}
+
+DefaultHead.size=new real(pen p=currentpen) {return 2.5mm;};
+
+void draw_grid_lines(real min_x, real max_x, real min_y, real max_y)
+{
+for(real gx=min_x+1; gx<=max_x-1; ++gx)
+	draw((gx,min_y)--(gx,max_y),dotted+darkgray);
+    
+for(real gy=min_y+1; gy<=max_y-1; ++gy)
+	draw((min_x,gy)--(max_x,gy),dotted+darkgray);
+}
 \end{asydef}
 
 % functions to draw triangles
