@@ -14,6 +14,7 @@
 \RequirePackage[calc, useregional, datesep=/]{datetime2}
 \RequirePackage{termcal}
 \RequirePackage{xparse}
+\RequirePackage{hyperref}
 
 \DTMsetdatestyle{mdyyyy}
 
@@ -92,6 +93,9 @@
 \DTMsetdatestyle{DOWMonthDay}
 \DTMusedate{#1}
 \DTMsetdatestyle{mdyyyy}}
+
+\hypersetup{colorlinks=true}
+\newcommand{\mailto}[1]{\href{mailto:#1}{#1}}
 %%
 \endinput
 %%
