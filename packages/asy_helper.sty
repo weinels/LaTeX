@@ -79,6 +79,143 @@ guide[] isocline(real f(real), real yp(real, real), real min_t, real max_t, int 
 }
 \end{asydef}
 
+% draw phaselines
+\begin{asydef}
+void phase_line(real yp (real, real), real[] zeros, real bottom, real top, real x, pen p)
+{
+	guide[] guides;
+	
+	// sort the zeros
+	zeros = sort(zeros);
+	
+	// find the smallest distance between consecutive points
+	real min_dist = inf;
+	if (zeros.length > 1)
+	{
+		for(int i = 1; i < zeros.length; ++i)
+		{
+			real d = abs(zeros[i] - zeros[i-1]);
+			if (d < min_dist)
+				min_dist = d;
+		}
+	}
+	else
+	{
+		min_dist = 1.0;
+	}
+
+	// set the offset to use when calculating slopes
+	real offset = min_dist/2;
+	
+	struct Node
+	{
+		real y;
+		real below;
+		real above;
+	}
+		
+	// build the node list
+	Node[] nodes;
+	for(real z : zeros)
+	{
+		Node n;
+		n.y = z;
+		n.below = yp(0, z - offset);
+		n.above = yp(0, z + offset);
+		nodes.push(n);
+	}
+	
+	// function to draw the arrows
+	void draw_arrow(pair pt, real length, real dir)
+	{
+		path a = (pt.x, pt.y - length) -- (pt.x, pt.y + length);
+		
+		// up
+		if (dir > 0)
+				draw(a, p, EndArrow());
+			
+		// down
+		if (dir < 0)
+				draw(a, p, BeginArrow());
+	}
+	
+	// function to draw node circle
+	void draw_node(Node n)
+	{
+		real r = 0.10;
+		
+		//write(string(n.y));
+		// arrows point toward
+		if ((n.above < 0) && (n.below > 0))
+		{
+			//write("stable");
+			fill(circle((x,n.y), r), p);
+			draw(circle((x,n.y), r), p);
+		}
+		
+		// arrows point away
+		if ((n.above > 0) && (n.below < 0))
+		{
+			//write("unstable");
+			unfill(circle((x,n.y), r));
+			draw(circle((x,n.y), r), p);
+		}
+		
+		// arrows point in same direction
+		if (n.above * n.below > 0)
+		{
+			//write("semistable");
+			unfill(circle((x,n.y), r));
+			draw(circle((x,n.y), r), p);
+			fill(arc((x, n.y), 0.1, 180, 360) -- cycle, p);
+			
+		}
+	}
+	
+	// draw the arrow below the lowest node
+	if (nodes[0].y > bottom)
+	{
+		real y = nodes[0].y;
+		while(y > bottom + offset)
+		{
+			draw_arrow((x, y - offset), offset/2, nodes[0].below);
+			y = y - (1.25*offset);
+		}
+	}
+	
+	// draw the arrows between consecutive nodes
+	for (int i = 0; i < nodes.length - 1; ++i)
+	{
+		Node n1 = nodes[i];
+		Node n2 = nodes[i+1];
+		
+		draw_node(n1);
+						
+		pair pt = midpoint((x,n1.y) -- (x,n2.y));
+		
+		draw_arrow(pt, offset/2, n1.above);
+		
+	}
+	
+	// if there is more than one node, draw the last one
+	if (nodes.length > 1)
+		draw_node(nodes[nodes.length - 1]);
+	
+	// draw the arrow above the highest node
+	if (nodes[nodes.length-1].y < top)
+	{
+		real y = nodes[nodes.length-1].y;
+		while(y < top - offset)
+		{
+			draw_arrow((x, y + offset), offset/2, nodes[nodes.length-1].above);
+			y = y + (1.25 * offset);
+		}
+	}
+
+		//draw_arrow((x, nodes[nodes.length-1].y + offset), offset/2, nodes[nodes.length-1].above);
+}
+\end{asydef}
+
 % graphing helper functions
 \begin{asydef}
 int pen_pos=-1;
