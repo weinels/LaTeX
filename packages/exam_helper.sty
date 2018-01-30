@@ -21,6 +21,7 @@
 \RequirePackage{calc}
 \RequirePackage{xstring}
 \RequirePackage{afterpage}
+\RequirePackage{framed}
 
 % mock exam option
 \newif\ifmockexam
@@ -93,12 +94,8 @@
 \fi
 
 % quick print macro to print different things if printanswers is enabled
-\newcommand{\ifprtans}[2]{%
-\ifprintanswers
-#1
-\else
-#2
-\fi}
+\newcommand{\ifprtans}[2]{\ifprintanswers#1\else#2\fi}
+\newcommand{\ans}[1]{\ifprtans{#1}{}}
 
 % macro to make sure spacing is left when answers aren't being printed
 \newcommand{\answerphantom}[1]{%

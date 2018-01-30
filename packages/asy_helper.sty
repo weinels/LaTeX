@@ -302,7 +302,10 @@ void draw_ass_triangle(real alpha, real a, real b, bool answers=false)
 	    label("$c$", (c/2,-0.2));
 	}
 }
+\end{asydef}
 
+% draw polar graph axes
+\begin{asydef}
 void draw_polar_axes(int r_a, int r_b)
 {
 	pen p = mediumgrey + 1bp;
@@ -317,10 +320,7 @@ void draw_polar_axes(int r_a, int r_b)
 		draw((-r_b*cos(a),-r_b*sin(a)) -- (r_b*cos(a),r_b*sin(a)), p);
 	}
 }
-\end{asydef}
 
-% draw polar graph axes
-\begin{asydef}
 void draw_polar_graph(real num_rings)
 {
     pair deg(real theta, real size) 

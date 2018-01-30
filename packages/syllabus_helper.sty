@@ -11,10 +11,127 @@
   [2016/09/30 v0.1 Package to provide standardization to the formatting of syllabi.]
   
 \RequirePackage{general_macros}
-\RequirePackage[calc, useregional, datesep=/]{datetime2}
-\RequirePackage{termcal}
+
 \RequirePackage{xparse}
+\RequirePackage{termcal}
 \RequirePackage{hyperref}
+\RequirePackage{fancyhdr}
+\RequirePackage{tocloft}
+\RequirePackage[english]{babel}
+\RequirePackage[toc]{multitoc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[calc, useregional, datesep=/]{datetime2}
+\RequirePackage{titlesec}
+
+% bring in semester dates and such
+\input{../../semester_info.tex}
+% bring in class dates and such
+\input{course_info.tex}
+
+\setlength{\unitlength}{1cm}
+
+\renewcommand*{\multicolumntoc}{3}
+\renewcommand{\contentsname}{Contents}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\setcounter{secnumdepth}{0}
+
+\titleformat*{\section}{\large\bfseries}
+
+% syllabus section environment
+\newenvironment{syllabusitem}[1]%
+{\section{#1}}%
+{}%
+
+\newcommand{\courseinfo}[0]{%
+\begin{center}
+{\bf\Large% 
+%Salt Lake Community College\\
+\includegraphics[width=0.4\linewidth]{SLCClogo}
+
+\vspace{0.1cm}
+\CourseName\\
+MATH \CourseNumber\ Section\ \CourseSection\\ 
+\CourseDays\ \ \CourseTime\ \ \CourseRoom\\
+
+\vspace{0.2cm}
+\CourseSemester\\ 
+
+\vspace{0.2cm}
+\InstructorName\\
+\email{\InstructorEmail}\\
+}
+\end{center}
+}
+
+\newcommand{\genedstatements}[1]{%
+\begin{syllabusitem}{General Education Statement}
+This course fulfills the #1 requirement for the General Education Program at Salt Lake Community College. It is designed not only to teach the information and skills required by the discipline, but also to develop vital workplace skills and to teach strategies and skills that can be used for life-long learning. General Education courses teach basic skills as well as broaden a student's knowledge of a wide range of subjects. 
+
+\vspace{0.5cm}
+\emph{Education is much more than the acquisition of facts; it is being able to use information in meaningful ways in order to enrich one's life.} While the subject of each course is important and useful, we become truly educated through making connections of such varied information with the different methods of organizing human experience that are practiced by different disciplines. Therefore, this course, when combined with other General Education courses, will enable you to develop broader perspectives and deeper understandings of your community and the world, as well as challenge previously held assumptions about the world and its inhabitants.
+\end{syllabusitem}
+
+\begin{syllabusitem}{General Education e-Portfolios}
+Each student in General Education courses at SLCC maintains a General Education ePortfolio. Instructors in every Gen Ed course will ask you to put at least one assignment from the course into your ePortfolio, and accompany it with reflective writing. It is a requirement in this class for you to add to your ePortfolio. Your ePortfolio will allow you to include your educational goals, describe your extracurricular activities, and post your resume. When you finish your time at SLCC, your ePortfolio will then be a multi-media showcase of your educational experience.   New ePortfolio Introduction Video.  
+
+\vspace{0.5cm}
+This good three-minute video for you to watch: \url{https://www.youtube.com/watch?v=-Pn3AAts1-4} 
+
+\vspace{0.5cm}
+Salt Lake Community College and Utah Valley University have jointly adopted Digication as the default ePortfolio tool for all students. New students will use Digication for ePortfolio creation, but most students have a Web 2.0 portfolio they already created. \textbf{If you already have an established portfolio we will not be asking you to change to Digication.} If you have an existing portfolio with rich content in it, keep it and keep working to improve it as a showcase of your learning. If you haven't yet started an ePortfolio, start one with Digication. If you have an existing portfolio with very little in it, consider moving that content to a Digication portfolio.
+
+\vspace{0.5cm}
+For any questions on starting your e-Portfolio, please visit: \url{http://eportresource.weebly.com/}
+\end{syllabusitem}
+}
+
+\newcommand{\collegestatements}[0]{%
+\begin{syllabusitem}{Withdrawal Policy}
+The last day to drop with a tuition refund is \prettydate{DropDeadline}.
+
+\vspace{0.25cm}
+The last day to withdraw from a course with no refund is \prettydate{WithdrawDeadline}.  No withdrawals will be approved after this date.
+\end{syllabusitem}
+
+\begin{syllabusitem}{Classroom Deportment}
+Each student is responsible for their behavior. Any student who shows a pattern of disrespect for others, or who at any time displays flagrant disrespect for others, will be subject to penalties as per the student code of conduct.  All students are expected to follow the SLCC Student Code of Conduct found at \url{http://www.slcc.edu/policies/docs/Student_Code_of_Conduct.pdf}.
+\end{syllabusitem}
+
+\begin{syllabusitem}{Academic Honesty}
+As per the student code of conduct, it is the instructors prerogative to either fail a student on a particular assignment for which they were caught cheating or fail that student for the entire course.
+\end{syllabusitem}
+
+\begin{syllabusitem}{Accommodations}
+Students with disabilities needing accommodations such as: accommodated testing, interpreting, note taking, taped textbooks, assistive technology, equipment, accessibility arrangements, etc., must contact the Disability Resource Center (Redwood College Center - Room 244 or South City Campus Room 1-061 E-A), 957-4659 (voice), 957-4646 (TTY), 957-4947 (FAX). 
+
+\vspace{0.5cm}
+\begin{center}{\large\textbf{The instructor cannot make accommodations without the approval of the DRC.}}\end{center}
+\end{syllabusitem}
+
+\clearpage
+\begin{syllabusitem}{Title IX}
+Title IX of the Educational Amendments of 1972 prohibits discrimination based on sex in any educational institution that receives federal funding. Salt Lake Community College does not tolerate sex discrimination of any kind including: sexual misconduct; sexual harassment; relationship/sexual violence and stalking. These incidents may interfere with or limit an individual's ability to benefit from or participate in the College's educational programs or activities. 
+
+\vspace{0.5cm}
+If you have questions or concerns regarding your rights or responsibilities, or if you would like to file a Title IX complaint please contact:
+
+Kenneth Stonebrook, J.D.\\
+Title IX Coordinator\\
+Salt Lake Community College\\
+Taylorsville Redwood Campus - STC 276A\\
+(801) 957-5027\\
+\email{ken.stonebrook@slcc.edu}
+
+\vspace{0.5cm}
+Online Reporting Form: \url{http://www.slcc.edu/title-ix/complaint.aspx}
+
+\vspace{0.5cm}
+Students may also report incidents to an SLCC faculty or staff member, who are required by law to notify the Title IX Coordinator. If a student wishes to keep the information confidential, the student may speak with staff members of the Center for Health and Counseling, (801) 957-4268.
+
+\vspace{0.5cm}
+For more information about Title IX, go to: \url{http://www.slcc.edu/title-ix/index.aspx}
+\end{syllabusitem}
+}
 
 \DTMsetdatestyle{mdyyyy}
 
@@ -96,7 +213,8 @@
 
 \hypersetup{colorlinks=true}
 \newcommand{\mailto}[1]{\href{mailto:#1}{#1}}
-%%
+\newcommand{\email}[1]{\mailto{#1}}
+
 \endinput
 %%
 %% End of file
