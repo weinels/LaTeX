@@ -8,7 +8,7 @@
 % 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{exam_helper}
-  [2016/09/30 v0.1 Package to provide standardization to the formatting of exams.]
+  [2018/03/13 v0.3 Package to provide standardization to the formatting of exams.]
   
 \RequirePackage{general_macros}
 
@@ -22,6 +22,7 @@
 \RequirePackage{xstring}
 \RequirePackage{afterpage}
 \RequirePackage{framed}
+\RequirePackage{geometry}
 
 % mock exam option
 \newif\ifmockexam
@@ -49,6 +50,17 @@
 \newcommand{\setCourse}[1]{\renewcommand{\exmCourse}{#1}}
 \newcommand{\setSchoolName}[1]{\renewcommand{\exmSchoolName}{#1}}
 \newcommand{\setExamNumber}[1]{\renewcommand{\exmNum}{#1}}
+\newcommand{\setFirstQuestionNumber}[1]{\setcounter{question}{#1-1}}
+
+% set page dimensions
+
+\geometry{
+	letterpaper,
+	lmargin=15mm,
+	rmargin=15mm,
+	tmargin=25mm,
+	bmargin=25mm,
+}
 
 % set solution styling
 \CorrectChoiceEmphasis{\bfseries\large\color{darkgray}}
@@ -256,9 +268,9 @@ $\int \sin[x] \hspace{2pt}dx = -\cos[x]$
 &
 $\int \cos[x] \hspace{2pt}dx = \sin[x]$
 \\
-$\int \tan[x] \hspace{2pt}dx = -\frac{1}{a} \ln \cos[ax] $
+$\int \tan[x] \hspace{2pt}dx = -\ln\abs{\cos[x]} = \ln\abs{\sec[x]} $
 &
-$\int \sec[x] \hspace{2pt}dx = \ln[\abs{\sec[x] + \tan[x]}]$
+$\int \sec[x] \hspace{2pt}dx = \ln\abs{\sec[x] + \tan[x]}$
 \\
 $\int \sec[x][2] \hspace{2pt}dx = \tan[x]$
 &
@@ -311,6 +323,12 @@ e^{at}\cos[bt]	& \dfrac{s-a}{{(s-a)}^2+b^2}	& s>a			\\
 \rhead{Reference Sheet}
 \examIntegrals
 \examLaplace}
+
+% Reference sheet for integrals only
+\newcommand{\examIntegralsRef}{%
+\thispagestyle{headandfoot}
+\rhead{Reference Sheet}
+\examIntegrals}
 
 % Reference Sheet for College Algebra
 %\newsavebox\ellipsebox
