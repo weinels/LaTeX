@@ -20,7 +20,7 @@ asycmd=(asy -q)
 gnuls=(gls)
 
 # attempt to set banner width to the width of the (interactive) terminal
-banner_width=70
+banner_width=68
 if tput cols > /dev/null 2>&1
 then
 	banner_width="$(tput cols)"
