@@ -213,7 +213,7 @@ function remove_old_files
 
 	old_dir=$(pwd)
 	cd "$working_dir"
-	for f in $("${gnuls[@]}" "-1v" "$name".nav "$name".out "$name".snm "$name".toc "$name".vrb "$name".pre "$name".pdf "$name".aux "$name".log "$name".dvi "$name".fls "$name".synctex.gz "$name"-* 2> /dev/null)
+	for f in $("${gnuls[@]}" "-1v" "$name".nav "$name".out "$name".snm "$name".toc "$name".vrb "$name".pre "$name".pdf "$name".aux "$name".log "$name".dvi "$name".fls "$name".synctex.gz "$name"-* *-eps-converted-to.pdf 2> /dev/null)
 	do
 		if [ -f "$f" ]
 		then
@@ -348,6 +348,7 @@ mkdir -p "$working_dir"
 
 # copy the file into the working dir
 cp *.tex "$working_dir"/
+cp *.eps "$working_dir"/ 2> \dev\null
 
 # move into the working dir
 cd "$working_dir"
