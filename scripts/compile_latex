@@ -348,7 +348,7 @@ mkdir -p "$working_dir"
 
 # copy the file into the working dir
 cp *.tex "$working_dir"/
-cp *.eps "$working_dir"/ 2> \dev\null
+cp *.eps "$working_dir"/ 2> /dev/null
 
 # move into the working dir
 cd "$working_dir"
