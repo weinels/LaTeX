@@ -171,7 +171,7 @@ function run_asy
 {
 	draw_banner "$banner_width" "Start Asymptote"
 
-	python3.6 ~/LaTeX/scripts/asy.py || exit 1
+	python3 ~/LaTeX/scripts/asy.py || exit 1
 	
 #	count=0
 #	for f in $("${gnuls[@]}" "-1v" "$name"-*.asy 2> /dev/null)
