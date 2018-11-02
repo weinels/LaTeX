@@ -18,6 +18,18 @@ import fontsize;
 import slopefield;
 defaultpen(fontsize(9pt));
 ngraph=1000;
+
+srand(seconds());
+
+real randreal(real a, real b)
+{
+	return a + (b-a)*unitrand();
+}
+
+int randint(int a, int b)
+{
+	return a + (rand() % (b-a));
+}
 \end{asydef}
 
 % generate isoclines
