@@ -148,5 +148,6 @@ if __name__ == "__main__":
 		process(".", "asy.hashes")
 		sys.exit(0)
 	except AsyError as e:
-		print("\nError in {0}:\n{1}".format(e.file, e.stdout))
-		sys.exit(1)
+		if "Cannot write to texput.log" not in e.stdout:
+			print("\nError in {0}:\n{1}".format(e.file, e.stdout))
+			sys.exit(1)

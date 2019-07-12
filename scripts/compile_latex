@@ -20,7 +20,7 @@ asycmd=(asy -q)
 gnuls=(gls)
 
 # attempt to set banner width to the width of the (interactive) terminal
-banner_width=68
+banner_width=67
 if tput cols > /dev/null 2>&1
 then
 	banner_width="$(tput cols)"
@@ -171,7 +171,7 @@ function run_asy
 {
 	draw_banner "$banner_width" "Start Asymptote"
 
-	python3.6 ~/LaTeX/scripts/asy.py || exit 1
+	python3 ~/LaTeX/scripts/asy.py || exit 1
 	
 #	count=0
 #	for f in $("${gnuls[@]}" "-1v" "$name"-*.asy 2> /dev/null)
@@ -326,7 +326,7 @@ then
 fi
 
 # extract filename
-filename="$1"
+filename=$(basename $1)
 name="${filename%.*}"
 
 # check file type
@@ -365,7 +365,7 @@ start=$(date +%s)
 
 # make the first run a draft, since we will run again
 # it's common for asympotote to have trouble, so run again before giving up
-run_tex "draft" || run_tex "draft" || exit 1
+run_tex "draft" || exit 1
 
 # process any asymptote files generated, running the tex again if needed
 run_asy && run_tex "draft"

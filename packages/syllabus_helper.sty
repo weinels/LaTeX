@@ -22,11 +22,14 @@
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[calc, useregional, datesep=/]{datetime2}
 \RequirePackage{titlesec}
+\RequirePackage{booktabs}
 
 % bring in semester dates and such
-\input{../../semester_info.tex}
+\InputIfFileExists{../semester_info.tex}{}{}
+\InputIfFileExists{../../semester_info.tex}{}{}
+\InputIfFileExists{../../../semester_info.tex}{}{}
 % bring in class dates and such
-\input{course_info.tex}
+\InputIfFileExists{course_info.tex}{}{}
 
 \setlength{\unitlength}{1cm}
 
@@ -157,6 +160,9 @@ For more information about Title IX, go to: \url{http://www.slcc.edu/title-ix/in
 
 % command for adding holidays to a calendar
 \newcommand{\holiday}[2]{\options{\DTMusedate{#1}}{\noclassday}\caltext{\DTMusedate{#1}}{#2\\No~Classes}}
+\newcommand{\noHS}[1]{\options{#1}{\noclassday}\caltext{#1}{No~High~School}}
+\newcommand{\HSOH}[1]{\options{#1}{\noclassday}\caltext{#1}{'Office~Hours'}}
+\newcommand{\HSHD}[2]{\caltext{#1}{Due:~#2}}
 
 \DTMnewdatestyle{DOWMonthDay}{%
 % ##1 = year
